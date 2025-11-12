@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <SDL2/SDL2.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 #define TAILLE_CASE 40

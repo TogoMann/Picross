@@ -6,7 +6,7 @@ int main(int argc, char *argv[]) {
         printf("Erreur SDL_Init : %s\n", SDL_GetError());
         return -1;
     }
-    
+
     printf("SDL initialisé avec succès !\n");
     FILE *fichier = fopen("test.txt", "r");
 
@@ -17,16 +17,21 @@ int main(int argc, char *argv[]) {
     }
 
     Grille *grille_solution = chargerGrillesolution(fichier);
-    Grille * grille_jeu = chargerGrille(grille_solution);
     if (!grille_solution) {
         printf("Échec du chargement de la grille solution.\n");
         SDL_Quit();
         return -1;
     }
+
+    Grille *grille_jeu = chargerGrilleSauvegarde("save.txt");
     if (!grille_jeu) {
-        printf("Échec du chargement de la grille de jeu.\n");
-        SDL_Quit();
-        return -1;
+        grille_jeu = chargerGrille(grille_solution);
+        if (!grille_jeu) {
+            printf("Échec du chargement de la grille de jeu.\n");
+            libererGrille(grille_solution);
+            SDL_Quit();
+            return -1;
+        }
     }
 
     int largeurFenetre = grille_solution->largeur * TAILLE_CASE;
@@ -60,7 +65,17 @@ int main(int argc, char *argv[]) {
                 enCours = 0;
             } else if (evenement.type == SDL_MOUSEBUTTONDOWN) {
                 gererClic(grille_jeu, evenement.button.x, evenement.button.y);
-                Verification(grille_jeu, grille_solution);
+                Verification(grille_solution, grille_jeu);
+            } else if (evenement.type == SDL_KEYDOWN) {
+                if (evenement.key.keysym.sym == SDLK_s) {
+                    sauvegarderGrille("save.txt", grille_jeu);
+                } else if (evenement.key.keysym.sym == SDLK_r) {
+                    Grille *tmp = chargerGrilleSauvegarde("save.txt");
+                    if (tmp) {
+                        libererGrille(grille_jeu);
+                        grille_jeu = tmp;
+                    }
+                }
             }
         }
 
@@ -68,7 +83,7 @@ int main(int argc, char *argv[]) {
         SDL_RenderClear(rendu);
         dessinerGrille(rendu, grille_jeu);
         SDL_RenderPresent(rendu);
-        SDL_Delay(16); 
+        SDL_Delay(16);
     }
 
     SDL_DestroyRenderer(rendu);

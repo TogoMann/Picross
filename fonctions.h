@@ -24,7 +24,5 @@ void Verification(Grille * grille_solution, Grille * grille_jeu);
 void libererGrille(Grille *grille);
 void dessinerGrille(SDL_Renderer *rendu, Grille *grille);
 void gererClic(Grille *grille, int x, int y);
-void sauvegarderGrille(const char *nomFichier, Grille *grille);
-Grille *chargerGrilleSauvegarde(const char *nomFichier);
 
 #endif

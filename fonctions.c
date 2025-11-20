@@ -33,7 +33,7 @@ Grille *chargerGrillesolution(FILE *fichier) {
     int lignes = 0;
     int colonnes = 0;
     int caractere, colonnesActuelles = 0;
-
+    
     while ((caractere = fgetc(fichier)) != EOF) {
         if (caractere == '0' || caractere == '1') {
             colonnesActuelles++;
@@ -87,7 +87,7 @@ Grille *chargerGrillesolution(FILE *fichier) {
 }
 
 void Verification(Grille * grille_solution, Grille * grille_jeu){
-
+    
     int compteur=0;
 
     for(int i=0;i<grille_jeu->hauteur;i++) {
@@ -128,58 +128,6 @@ void gererClic(Grille *grille, int x, int y) {
     if (x >= 0 && y >= 0 && x < grille->largeur * TAILLE_CASE && y < grille->hauteur * TAILLE_CASE) {
         int col = x / TAILLE_CASE;
         int ligne = y / TAILLE_CASE;
-        grille->cases[ligne][col] = !grille->cases[ligne][col];
+        grille->cases[ligne][col] = !grille->cases[ligne][col]; 
     }
-}
-
-hauteur largeur
-CASE CASE CASE ...
-...
-void sauvegarderGrille(const char *nomFichier, Grille *grille) {
-    FILE *f = fopen(nomFichier, "w");
-    if (!f) {
-        printf("Erreur : impossible d’ouvrir %s pour sauvegarde.\n", nomFichier);
-        return;
-    }
-
-    fprintf(f, "%d %d\n", grille->hauteur, grille->largeur);
-
-    for (int i = 0; i < grille->hauteur; i++) {
-        for (int j = 0; j < grille->largeur; j++) {
-            fprintf(f, "%d ", grille->cases[i][j]);
-        }
-        fprintf(f, "\n");
-    }
-
-    fclose(f);
-    printf("Sauvegarde réalisée dans %s\n", nomFichier);
-}
-Grille *chargerGrilleSauvegarde(const char *nomFichier) {
-    FILE *f = fopen(nomFichier, "r");
-    if (!f) {
-        printf("Aucune sauvegarde trouvée (%s).\n", nomFichier);
-        return NULL;
-    }
-
-    int h, l;
-    fscanf(f, "%d %d", &h, &l);
-
-    Grille *g = malloc(sizeof(Grille));
-    g->hauteur = h;
-    g->largeur = l;
-    g->nombre_cases_noires = 0;
-    g->cases = malloc(h * sizeof(int *));
-
-    for (int i = 0; i < h; i++) {
-        g->cases[i] = malloc(l * sizeof(int));
-        for (int j = 0; j < l; j++) {
-            fscanf(f, "%d", &g->cases[i][j]);
-            if (g->cases[i][j] == 1)
-                g->nombre_cases_noires++;
-        }
-    }
-
-    fclose(f);
-    printf("Sauvegarde chargée depuis %s !\n", nomFichier);
-    return g;
 }

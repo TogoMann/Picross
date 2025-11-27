@@ -1,5 +1,5 @@
 #include "fonctions.h"
-#include <string.h>
+
 
 static int **allouerCases(int hauteur, int largeur) {
     int **cases = malloc(hauteur * sizeof(int *));
@@ -17,70 +17,43 @@ static int **allouerCases(int hauteur, int largeur) {
     }
     return cases;
 }
-
 Grille *chargerGrillesolution(FILE *fichier) {
     if (!fichier) return NULL;
-
     char ligne[1024];
     int **cases = NULL;
     int hauteur = 0;
     int largeur = 0;
     int capacite = 0;
     int nb_noires = 0;
-
     while (fgets(ligne, sizeof(ligne), fichier)) {
         size_t len = strlen(ligne);
-        while (len > 0 &&
-               (ligne[len - 1] == '\n' || ligne[len - 1] == '\r')) {
-            ligne[--len] = '\0';
-        }
-
+        while (len > 0 && (ligne[len - 1] == '\n' || ligne[len - 1] == '\r')) ligne[--len] = '\0';
         int count_bits = 0;
-        for (size_t i = 0; i < len; ++i) {
-            if (ligne[i] == '0' || ligne[i] == '1') {
-                count_bits++;
-            }
-        }
-        if (count_bits == 0) {
-            continue;
-        }
-
-        if (largeur == 0) {
-            largeur = count_bits;
-        } else if (largeur != count_bits) {
-            fprintf(stderr, "Ligne non rectangulaire dans test.txt\n");
-            for (int r = 0; r < hauteur; ++r) {
-                free(cases[r]);
-            }
+        for (size_t i = 0; i < len; ++i) if (ligne[i] == '0' || ligne[i] == '1') count_bits++;
+        if (count_bits == 0) continue;
+        if (largeur == 0) largeur = count_bits;
+        else if (largeur != count_bits) {
+            for (int r = 0; r < hauteur; ++r) free(cases[r]);
             free(cases);
             return NULL;
         }
-
         if (hauteur >= capacite) {
             int nouvelle_capacite = (capacite == 0) ? 4 : capacite * 2;
             int **nouv = realloc(cases, nouvelle_capacite * sizeof(int *));
             if (!nouv) {
-                fprintf(stderr, "Erreur realloc pour les lignes de la grille\n");
-                for (int r = 0; r < hauteur; ++r) {
-                    free(cases[r]);
-                }
+                for (int r = 0; r < hauteur; ++r) free(cases[r]);
                 free(cases);
                 return NULL;
             }
             cases = nouv;
             capacite = nouvelle_capacite;
         }
-
         int *row = malloc(largeur * sizeof(int));
         if (!row) {
-            fprintf(stderr, "Erreur malloc pour une ligne de grille\n");
-            for (int r = 0; r < hauteur; ++r) {
-                free(cases[r]);
-            }
+            for (int r = 0; r < hauteur; ++r) free(cases[r]);
             free(cases);
             return NULL;
         }
-
         int c = 0;
         for (size_t i = 0; i < len && c < largeur; ++i) {
             if (ligne[i] == '0' || ligne[i] == '1') {
@@ -89,55 +62,56 @@ Grille *chargerGrillesolution(FILE *fichier) {
                 c++;
             }
         }
-
         cases[hauteur++] = row;
     }
-
     if (hauteur == 0 || largeur == 0) {
-        fprintf(stderr, "Aucune donnée de grille lue dans test.txt\n");
         free(cases);
         return NULL;
     }
-
     Grille *g = malloc(sizeof(Grille));
     if (!g) {
-        fprintf(stderr, "Erreur malloc pour la structure Grille\n");
-        for (int r = 0; r < hauteur; ++r) {
-            free(cases[r]);
-        }
+        for (int r = 0; r < hauteur; ++r) free(cases[r]);
         free(cases);
         return NULL;
     }
-
     g->cases = cases;
     g->hauteur = hauteur;
     g->largeur = largeur;
     g->taille = hauteur * largeur;
     g->nombre_cases_noires = nb_noires;
-
     return g;
 }
 
 Grille *chargerGrille(Grille *grille_solution) {
     if (!grille_solution) return NULL;
-
     Grille *g = malloc(sizeof(Grille));
     if (!g) return NULL;
-
     g->hauteur = grille_solution->hauteur;
     g->largeur = grille_solution->largeur;
     g->taille  = g->hauteur * g->largeur;
     g->nombre_cases_noires = 0;
-
     g->cases = allouerCases(g->hauteur, g->largeur);
     if (!g->cases) {
         free(g);
         return NULL;
     }
-
     return g;
 }
 
+
+int *calculerIndices(int *ligne, int taille, int *nb_indices)
+{
+    int *indices = malloc(taille * sizeof(int));
+    int count = 0;
+    int n = 0;
+    for (int i = 0; i < taille; ++i) {
+        if (ligne[i] == 1) n++;
+        else if (n > 0) { indices[count++] = n; n = 0; }
+    }
+    if (n > 0) indices[count++] = n;
+    *nb_indices = count;
+    return indices;
+}
 void libererGrille(Grille *grille) {
     if (!grille) return;
 
@@ -149,43 +123,81 @@ void libererGrille(Grille *grille) {
     }
     free(grille);
 }
+void dessinerGrille(SDL_Renderer *renderer, Grille *grille) {
+    if (!grille || !renderer) return;
 
-void dessinerGrille(SDL_Renderer *rendu, Grille *grille) {
-    if (!grille || !rendu) return;
+    int decalageX = 50; // espace pour indices colonnes
+    int decalageY = 50; // espace pour indices lignes
 
+    SDL_Color blanc = {255, 255, 255, 255};
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 16);
+    if (!font) return;
+
+    // dessiner les cases
     for (int y = 0; y < grille->hauteur; ++y) {
         for (int x = 0; x < grille->largeur; ++x) {
-            SDL_Rect rect;
-            rect.x = x * TAILLE_CASE;
-            rect.y = y * TAILLE_CASE;
-            rect.w = TAILLE_CASE;
-            rect.h = TAILLE_CASE;
-
-            if (grille->cases[y][x] == 1) {
-                SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);     
-            } else {
-                SDL_SetRenderDrawColor(rendu, 255, 255, 255, 255); 
-            }
-            SDL_RenderFillRect(rendu, &rect);
-
-            SDL_SetRenderDrawColor(rendu, 0, 0, 0, 255);
-            SDL_RenderDrawRect(rendu, &rect);
+            SDL_Rect rect = {x * TAILLE_CASE + decalageX, y * TAILLE_CASE + decalageY, TAILLE_CASE, TAILLE_CASE};
+            if (grille->cases[y][x] == 1) SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            else SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderFillRect(renderer, &rect);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderDrawRect(renderer, &rect);
         }
     }
+
+    // indices lignes
+    for (int y = 0; y < grille->hauteur; ++y) {
+        int nb;
+        int *indices = calculerIndices(grille->cases[y], grille->largeur, &nb);
+        int total_w = nb * 16; // largeur approximative par chiffre
+        for (int i = 0; i < nb; ++i) {
+            char buf[8];
+            snprintf(buf, sizeof(buf), "%d", indices[i]);
+            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, blanc);
+            SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+            SDL_FreeSurface(surf);
+            SDL_Rect r = { decalageX - total_w + i * 16, y * TAILLE_CASE + decalageY, 16, TAILLE_CASE };
+            SDL_RenderCopy(renderer, tex, NULL, &r);
+            SDL_DestroyTexture(tex);
+        }
+        free(indices);
+    }
+
+    // indices colonnes
+    for (int x = 0; x < grille->largeur; ++x) {
+        int col[grille->hauteur];
+        for (int y = 0; y < grille->hauteur; ++y) col[y] = grille->cases[y][x];
+        int nb;
+        int *indices = calculerIndices(col, grille->hauteur, &nb);
+        int total_h = nb * 16; // hauteur approximative par chiffre
+        for (int i = 0; i < nb; ++i) {
+            char buf[8];
+            snprintf(buf, sizeof(buf), "%d", indices[i]);
+            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, blanc);
+            SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+            SDL_FreeSurface(surf);
+            SDL_Rect r = { x * TAILLE_CASE + decalageX, decalageY - total_h + i * 16, TAILLE_CASE, 16 };
+            SDL_RenderCopy(renderer, tex, NULL, &r);
+            SDL_DestroyTexture(tex);
+        }
+        free(indices);
+    }
+
+    TTF_CloseFont(font);
 }
 
 void gererClic(Grille *grille, int x, int y) {
     if (!grille) return;
 
-    int col = x / TAILLE_CASE;
-    int lig = y / TAILLE_CASE;
+    int decalageX = 50;
+    int decalageY = 50;
 
-    if (lig < 0 || lig >= grille->hauteur ||
-        col < 0 || col >= grille->largeur) {
-        return;
-    }
+    int col = (x - decalageX) / TAILLE_CASE;
+    int lig = (y - decalageY) / TAILLE_CASE;
 
-    grille->cases[lig][col] = (grille->cases[lig][col] == 0) ? 1 : 0;
+    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur) return;
+
+    grille->cases[lig][col] = !grille->cases[lig][col];
 }
 
 void Verification(Grille *grille_solution, Grille *grille_jeu) {
@@ -368,4 +380,313 @@ int check_grids_from_files(const char *player_path, const char *solution_path) {
     free_grid(g1, r1);
     free_grid(g2, r2);
     return same ? 1 : 0;
+}
+
+void afficherEcranFin(SDL_Renderer *renderer, const char *message) {
+    int w = 0, h = 0;
+    SDL_GetRendererOutputSize(renderer, &w, &h);
+
+    int enCours = 1;
+    SDL_Event e;
+
+    while (enCours) {
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {
+                enCours = 0;
+            } else if (e.type == SDL_KEYDOWN ||
+                       e.type == SDL_MOUSEBUTTONDOWN) {
+                enCours = 0;
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        int x = w / 2 - 80;
+        int y = h / 2;
+        stringRGBA(renderer, x, y, message,
+                   255, 255, 255, 255);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
+    }
+}
+
+int grillesIdentiques(Grille *grille_solution, Grille *grille_jeu) {
+    if (!grille_solution || !grille_jeu) return 0;
+
+    if (grille_solution->hauteur != grille_jeu->hauteur ||
+        grille_solution->largeur != grille_jeu->largeur) {
+        return 0;
+    }
+
+    for (int y = 0; y < grille_solution->hauteur; ++y) {
+        for (int x = 0; x < grille_solution->largeur; ++x) {
+            if (grille_solution->cases[y][x] != grille_jeu->cases[y][x]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+
+
+
+SDL_Texture * texture_init(const char * fichier, SDL_Renderer * renderer)
+
+{
+
+    SDL_Texture *texture = IMG_LoadTexture(renderer, fichier);
+
+ 
+
+    if (!texture){
+
+    printf("Impossible de charger la texture\n");
+
+    }
+
+    return texture;
+
+}
+
+ 
+
+Bouton creer_bouton(const char *fichier, SDL_Renderer *renderer, const char *label, TTF_Font *font, int x, int y)
+{
+    Bouton b;
+
+    b.texture = texture_init(fichier, renderer);
+    b.rect.x = x;
+    b.rect.y = y;
+    b.rect.w = BTN_W;
+    b.rect.h = BTN_H;
+
+    SDL_Color blanc = {255, 255, 255, 255};
+    SDL_Surface *surf_texte = TTF_RenderText_Solid(font, label, blanc);
+    b.texte = SDL_CreateTextureFromSurface(renderer, surf_texte);
+    SDL_FreeSurface(surf_texte);
+
+    int text_w, text_h;
+    SDL_QueryTexture(b.texte, NULL, NULL, &text_w, &text_h);
+
+    if (text_w > b.rect.w) b.rect.w = text_w + 20; 
+if (text_h > b.rect.h) b.rect.h = text_h + 10;
+    b.rect_texte.w = text_w;
+    b.rect_texte.h = text_h;
+    b.rect_texte.x = b.rect.x + (b.rect.w - text_w)/2;
+    b.rect_texte.y = b.rect.y + (b.rect.h - text_h)/2;
+
+    return b;
+}
+
+
+ 
+
+bool Clique(int souris_x, int souris_y, Bouton b)
+
+{
+
+    if (souris_x >= b.rect.x && souris_y >= b.rect.y && souris_x <= b.rect.x + b.rect.w && souris_y <= b.rect.y + b.rect.h)
+
+    {
+
+        return true;
+
+    }
+    return false;
+
+}void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels)
+{
+    (void)window;
+
+    Mix_Music *musique = Mix_LoadMUS("music/musique.wav");
+    if (musique) Mix_PlayMusic(musique, -1);
+
+    SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
+    if (!texture_fond) return;
+
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 36);
+    if (!font) return;
+
+    SDL_Color blanc = {255, 255, 255, 255};
+
+
+    SDL_Surface *surf_titre = TTF_RenderText_Solid(font, "Picross Game", blanc);
+    SDL_Texture *texture_titre = SDL_CreateTextureFromSurface(renderer, surf_titre);
+    SDL_FreeSurface(surf_titre);
+    int titre_w, titre_h;
+    SDL_QueryTexture(texture_titre, NULL, NULL, &titre_w, &titre_h);
+    SDL_Rect rect_titre = { (largeurGrillePixels - titre_w) / 2, 50, titre_w, titre_h };
+
+
+    Bouton btn_jouer   = creer_bouton("textures/btn_jouer.jpg", renderer, "Jouer", font, 100, 200);
+    Bouton btn_param   = creer_bouton("textures/param.jpg", renderer, "Options", font, 100, 270);
+    Bouton btn_quitter = creer_bouton("textures/quit.jpg", renderer, "Quitter", font, 100, 340);
+
+    SDL_Event event;
+    int running = 1;
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT)
+                running = 0;
+            else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                int mx = event.button.x, my = event.button.y;
+                if (Clique(mx, my, btn_jouer))
+                    Menu_jouer(renderer, window, grille_solution, grille_jeu, largeurGrillePixels, hauteurGrillePixels);
+                else if (Clique(mx, my, btn_param))
+                    Menu_parametres(renderer, window);
+                else if (Clique(mx, my, btn_quitter))
+                    running = 0;
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderClear(renderer);
+
+        // Fond et titre
+        SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
+        SDL_RenderCopy(renderer, texture_titre, NULL, &rect_titre);
+
+        // Boutons avec texte centré
+        SDL_RenderCopy(renderer, btn_jouer.texture, NULL, &btn_jouer.rect);
+        SDL_RenderCopy(renderer, btn_jouer.texte, NULL, &btn_jouer.rect_texte);
+
+        SDL_RenderCopy(renderer, btn_param.texture, NULL, &btn_param.rect);
+        SDL_RenderCopy(renderer, btn_param.texte, NULL, &btn_param.rect_texte);
+
+        SDL_RenderCopy(renderer, btn_quitter.texture, NULL, &btn_quitter.rect);
+        SDL_RenderCopy(renderer, btn_quitter.texte, NULL, &btn_quitter.rect_texte);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
+    }
+
+
+    SDL_DestroyTexture(texture_titre);
+    SDL_DestroyTexture(texture_fond);
+
+    SDL_DestroyTexture(btn_jouer.texture);
+    SDL_DestroyTexture(btn_jouer.texte);
+    SDL_DestroyTexture(btn_param.texture);
+    SDL_DestroyTexture(btn_param.texte);
+    SDL_DestroyTexture(btn_quitter.texture);
+    SDL_DestroyTexture(btn_quitter.texte);
+
+    TTF_CloseFont(font);
+    if (musique) Mix_FreeMusic(musique);
+}
+
+void Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels)
+{
+    (void)window;
+
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 24);
+    if (!font) return;
+
+    Bouton boutonFinis = creer_bouton("textures/btn_jouer.jpg", renderer, "Fin", font, largeurGrillePixels + 10, 10);
+
+    SDL_Event e;
+    int enCours = 1;
+
+    while(enCours) {
+        while(SDL_PollEvent(&e)) {
+            if(e.type == SDL_QUIT) enCours = 0;
+            else if(e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+                int mx = e.button.x, my = e.button.y;
+                if(Clique(mx, my, boutonFinis)) {
+                    int ok = grillesIdentiques(grille_solution, grille_jeu);
+                    if(ok) afficherEcranFin(renderer, "Tout bon !");
+                    else afficherEcranFin(renderer, "Flop !");
+                } else if(mx < largeurGrillePixels && my < hauteurGrillePixels) {
+                    gererClic(grille_jeu, mx, my);
+                }
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderClear(renderer);
+
+        dessinerGrille(renderer, grille_jeu);
+
+        // Affichage du bouton avec texte
+        SDL_RenderCopy(renderer, boutonFinis.texture, NULL, &boutonFinis.rect);
+        SDL_RenderCopy(renderer, boutonFinis.texte, NULL, &boutonFinis.rect_texte);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
+    }
+
+    SDL_DestroyTexture(boutonFinis.texture);
+    SDL_DestroyTexture(boutonFinis.texte);
+    TTF_CloseFont(font);
+}
+
+void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window)
+{
+    if (!renderer || !window) return;
+
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 24);
+    if (!font) return;
+
+    SDL_Color blanc = {255, 255, 255, 255};
+
+    // Fond
+    SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
+    if (!texture_fond) return;
+
+
+    Bouton btn_retour = creer_bouton("textures/btn_jouer.jpg", renderer, "Retour", font, 50, 50);
+
+
+    int volume = Mix_VolumeMusic(-1);
+    char txt_volume[32];
+
+
+    snprintf(txt_volume, sizeof(txt_volume), "Volume: %d", volume);
+
+
+
+    SDL_Surface *surf_vol = TTF_RenderText_Solid(font, txt_volume, blanc);
+    SDL_Texture *tex_volume = SDL_CreateTextureFromSurface(renderer, surf_vol);
+    SDL_FreeSurface(surf_vol);
+
+
+    SDL_Rect rect_volume = {50, 150, 200, 30};
+
+    SDL_Event event;
+    int running = 1;
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) running = 0;
+            else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+                int mx = event.button.x, my = event.button.y;
+                if (Clique(mx, my, btn_retour)) {
+                    running = 0;
+                }
+            }
+        }
+
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_RenderClear(renderer);
+
+        SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
+        SDL_RenderCopy(renderer, btn_retour.texture, NULL, &btn_retour.rect);
+        SDL_RenderCopy(renderer, btn_retour.texte, NULL, &btn_retour.rect_texte);
+
+        SDL_RenderCopy(renderer, tex_volume, NULL, &rect_volume);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16);
+    }
+
+    // Libération
+    SDL_DestroyTexture(texture_fond);
+    SDL_DestroyTexture(btn_retour.texture);
+    SDL_DestroyTexture(btn_retour.texte);
+    SDL_DestroyTexture(tex_volume);
+    TTF_CloseFont(font);
 }

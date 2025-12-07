@@ -62,4 +62,4 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window,Grille *grille_so
 void Menu_jouer(SDL_Renderer *renderer, SDL_Window *window,Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels);
 void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window);
 
-#endif // FONCTIONS_H
+#endif

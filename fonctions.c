@@ -1,6 +1,5 @@
 #include "fonctions.h"
 
-
 static int **allouerCases(int hauteur, int largeur) {
     int **cases = malloc(hauteur * sizeof(int *));
     if (!cases) return NULL;
@@ -17,6 +16,7 @@ static int **allouerCases(int hauteur, int largeur) {
     }
     return cases;
 }
+
 Grille *chargerGrillesolution(FILE *fichier) {
     if (!fichier) return NULL;
     char ligne[1024];
@@ -98,7 +98,6 @@ Grille *chargerGrille(Grille *grille_solution) {
     return g;
 }
 
-
 int *calculerIndices(int *ligne, int taille, int *nb_indices)
 {
     int *indices = malloc(taille * sizeof(int));
@@ -112,6 +111,7 @@ int *calculerIndices(int *ligne, int taille, int *nb_indices)
     *nb_indices = count;
     return indices;
 }
+
 void libererGrille(Grille *grille) {
     if (!grille) return;
 
@@ -123,62 +123,96 @@ void libererGrille(Grille *grille) {
     }
     free(grille);
 }
-void dessinerGrille(SDL_Renderer *renderer, Grille *grille) {
-    if (!grille || !renderer) return;
 
-    int decalageX = 50; // espace pour indices colonnes
-    int decalageY = 50; // espace pour indices lignes
+void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_solution) {
+    if (!grille_jeu || !grille_solution || !renderer) return;
 
-    SDL_Color blanc = {255, 255, 255, 255};
-    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 16);
-    if (!font) return;
+    SDL_Rect fondGauche = {0, OFFSET_Y, OFFSET_X, grille_solution->hauteur * TAILLE_CASE};
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
+    SDL_RenderFillRect(renderer, &fondGauche);
 
-    // dessiner les cases
-    for (int y = 0; y < grille->hauteur; ++y) {
-        for (int x = 0; x < grille->largeur; ++x) {
-            SDL_Rect rect = {x * TAILLE_CASE + decalageX, y * TAILLE_CASE + decalageY, TAILLE_CASE, TAILLE_CASE};
-            if (grille->cases[y][x] == 1) SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_Rect fondHaut = {OFFSET_X, 0, grille_solution->largeur * TAILLE_CASE, OFFSET_Y};
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
+    SDL_RenderFillRect(renderer, &fondHaut);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    for (int y = 0; y <= grille_solution->hauteur; ++y) {
+        SDL_RenderDrawLine(renderer, 0, OFFSET_Y + y * TAILLE_CASE, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y + y * TAILLE_CASE);
+    }
+    for (int x = 0; x <= grille_solution->largeur; ++x) {
+        SDL_RenderDrawLine(renderer, OFFSET_X + x * TAILLE_CASE, 0, OFFSET_X + x * TAILLE_CASE, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderDrawLine(renderer, 0, OFFSET_Y, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y);
+    SDL_RenderDrawLine(renderer, OFFSET_X, 0, OFFSET_X, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
+
+    for (int y = 0; y < grille_jeu->hauteur; ++y) {
+        for (int x = 0; x < grille_jeu->largeur; ++x) {
+            SDL_Rect rect = {x * TAILLE_CASE + OFFSET_X + 1, y * TAILLE_CASE + OFFSET_Y + 1, TAILLE_CASE - 2, TAILLE_CASE - 2};
+            if (grille_jeu->cases[y][x] == 1) SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             else SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_RenderFillRect(renderer, &rect);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderDrawRect(renderer, &rect);
         }
     }
 
-    // indices lignes
-    for (int y = 0; y < grille->hauteur; ++y) {
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 18);
+    if (!font) {
+        return;
+    }
+
+    SDL_Color couleurTexte = {0, 0, 0, 255};
+
+    for (int y = 0; y < grille_solution->hauteur; ++y) {
         int nb;
-        int *indices = calculerIndices(grille->cases[y], grille->largeur, &nb);
-        int total_w = nb * 16; // largeur approximative par chiffre
+        int *indices = calculerIndices(grille_solution->cases[y], grille_solution->largeur, &nb);
+        int espace = 25;
+
         for (int i = 0; i < nb; ++i) {
-            char buf[8];
+            char buf[12];
             snprintf(buf, sizeof(buf), "%d", indices[i]);
-            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, blanc);
-            SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
-            SDL_FreeSurface(surf);
-            SDL_Rect r = { decalageX - total_w + i * 16, y * TAILLE_CASE + decalageY, 16, TAILLE_CASE };
-            SDL_RenderCopy(renderer, tex, NULL, &r);
-            SDL_DestroyTexture(tex);
+            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, couleurTexte);
+            if(surf) {
+                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+                int tw = surf->w;
+                int th = surf->h;
+                SDL_FreeSurface(surf);
+
+                int pos_x = OFFSET_X - ((nb - i) * espace) - 10;
+                int pos_y = y * TAILLE_CASE + OFFSET_Y + (TAILLE_CASE - th) / 2;
+
+                SDL_Rect r = { pos_x, pos_y, tw, th };
+                SDL_RenderCopy(renderer, tex, NULL, &r);
+                SDL_DestroyTexture(tex);
+            }
         }
         free(indices);
     }
 
-    // indices colonnes
-    for (int x = 0; x < grille->largeur; ++x) {
-        int col[grille->hauteur];
-        for (int y = 0; y < grille->hauteur; ++y) col[y] = grille->cases[y][x];
+    for (int x = 0; x < grille_solution->largeur; ++x) {
+        int col[grille_solution->hauteur];
+        for (int y = 0; y < grille_solution->hauteur; ++y) col[y] = grille_solution->cases[y][x];
         int nb;
-        int *indices = calculerIndices(col, grille->hauteur, &nb);
-        int total_h = nb * 16; // hauteur approximative par chiffre
+        int *indices = calculerIndices(col, grille_solution->hauteur, &nb);
+        int espace = 20;
+
         for (int i = 0; i < nb; ++i) {
-            char buf[8];
+            char buf[12];
             snprintf(buf, sizeof(buf), "%d", indices[i]);
-            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, blanc);
-            SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
-            SDL_FreeSurface(surf);
-            SDL_Rect r = { x * TAILLE_CASE + decalageX, decalageY - total_h + i * 16, TAILLE_CASE, 16 };
-            SDL_RenderCopy(renderer, tex, NULL, &r);
-            SDL_DestroyTexture(tex);
+            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, couleurTexte);
+            if(surf) {
+                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+                int tw = surf->w;
+                int th = surf->h;
+                SDL_FreeSurface(surf);
+
+                int pos_x = x * TAILLE_CASE + OFFSET_X + (TAILLE_CASE - tw) / 2;
+                int pos_y = OFFSET_Y - ((nb - i) * espace) - 5;
+
+                SDL_Rect r = { pos_x, pos_y, tw, th };
+                SDL_RenderCopy(renderer, tex, NULL, &r);
+                SDL_DestroyTexture(tex);
+            }
         }
         free(indices);
     }
@@ -189,11 +223,8 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille) {
 void gererClic(Grille *grille, int x, int y) {
     if (!grille) return;
 
-    int decalageX = 50;
-    int decalageY = 50;
-
-    int col = (x - decalageX) / TAILLE_CASE;
-    int lig = (y - decalageY) / TAILLE_CASE;
+    int col = (x - OFFSET_X) / TAILLE_CASE;
+    int lig = (y - OFFSET_Y) / TAILLE_CASE;
 
     if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur) return;
 
@@ -353,7 +384,7 @@ int compare_grids(const int * const *g1, const int * const *g2, size_t rows, siz
     return 1;
 }
 
-int check_grids_from_files(const char *player_path, const char *solution_path) { 
+int check_grids_from_files(const char *player_path, const char *solution_path) {
     int **g1 = NULL, **g2 = NULL;
     size_t r1 = 0, c1 = 0, r2 = 0, c2 = 0;
 
@@ -430,28 +461,14 @@ int grillesIdentiques(Grille *grille_solution, Grille *grille_jeu) {
     return 1;
 }
 
-
-
-
 SDL_Texture * texture_init(const char * fichier, SDL_Renderer * renderer)
-
 {
-
     SDL_Texture *texture = IMG_LoadTexture(renderer, fichier);
-
- 
-
     if (!texture){
-
     printf("Impossible de charger la texture\n");
-
     }
-
     return texture;
-
 }
-
- 
 
 Bouton creer_bouton(const char *fichier, SDL_Renderer *renderer, const char *label, TTF_Font *font, int x, int y)
 {
@@ -471,8 +488,8 @@ Bouton creer_bouton(const char *fichier, SDL_Renderer *renderer, const char *lab
     int text_w, text_h;
     SDL_QueryTexture(b.texte, NULL, NULL, &text_w, &text_h);
 
-    if (text_w > b.rect.w) b.rect.w = text_w + 20; 
-if (text_h > b.rect.h) b.rect.h = text_h + 10;
+    if (text_w > b.rect.w) b.rect.w = text_w + 20;
+    if (text_h > b.rect.h) b.rect.h = text_h + 10;
     b.rect_texte.w = text_w;
     b.rect_texte.h = text_h;
     b.rect_texte.x = b.rect.x + (b.rect.w - text_w)/2;
@@ -481,23 +498,16 @@ if (text_h > b.rect.h) b.rect.h = text_h + 10;
     return b;
 }
 
-
- 
-
 bool Clique(int souris_x, int souris_y, Bouton b)
-
 {
-
     if (souris_x >= b.rect.x && souris_y >= b.rect.y && souris_x <= b.rect.x + b.rect.w && souris_y <= b.rect.y + b.rect.h)
-
     {
-
         return true;
-
     }
     return false;
+}
 
-}void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels)
+void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels)
 {
     (void)window;
 
@@ -512,14 +522,12 @@ bool Clique(int souris_x, int souris_y, Bouton b)
 
     SDL_Color blanc = {255, 255, 255, 255};
 
-
     SDL_Surface *surf_titre = TTF_RenderText_Solid(font, "Picross Game", blanc);
     SDL_Texture *texture_titre = SDL_CreateTextureFromSurface(renderer, surf_titre);
     SDL_FreeSurface(surf_titre);
     int titre_w, titre_h;
     SDL_QueryTexture(texture_titre, NULL, NULL, &titre_w, &titre_h);
     SDL_Rect rect_titre = { (largeurGrillePixels - titre_w) / 2, 50, titre_w, titre_h };
-
 
     Bouton btn_jouer   = creer_bouton("textures/btn_jouer.jpg", renderer, "Jouer", font, 100, 200);
     Bouton btn_param   = creer_bouton("textures/param.jpg", renderer, "Options", font, 100, 270);
@@ -546,11 +554,9 @@ bool Clique(int souris_x, int souris_y, Bouton b)
         SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
         SDL_RenderClear(renderer);
 
-        // Fond et titre
         SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
         SDL_RenderCopy(renderer, texture_titre, NULL, &rect_titre);
 
-        // Boutons avec texte centré
         SDL_RenderCopy(renderer, btn_jouer.texture, NULL, &btn_jouer.rect);
         SDL_RenderCopy(renderer, btn_jouer.texte, NULL, &btn_jouer.rect_texte);
 
@@ -563,7 +569,6 @@ bool Clique(int souris_x, int souris_y, Bouton b)
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
-
 
     SDL_DestroyTexture(texture_titre);
     SDL_DestroyTexture(texture_fond);
@@ -586,7 +591,10 @@ void Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solut
     TTF_Font *font = TTF_OpenFont("fonts/font.otf", 24);
     if (!font) return;
 
-    Bouton boutonFinis = creer_bouton("textures/btn_jouer.jpg", renderer, "Fin", font, largeurGrillePixels + 10, 10);
+    int fenetreW, fenetreH;
+    SDL_GetWindowSize(window, &fenetreW, &fenetreH);
+
+    Bouton boutonFinis = creer_bouton("textures/btn_jouer.jpg", renderer, "Fin", font, fenetreW - 120, 10);
 
     SDL_Event e;
     int enCours = 1;
@@ -600,18 +608,18 @@ void Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solut
                     int ok = grillesIdentiques(grille_solution, grille_jeu);
                     if(ok) afficherEcranFin(renderer, "Tout bon !");
                     else afficherEcranFin(renderer, "Flop !");
-                } else if(mx < largeurGrillePixels && my < hauteurGrillePixels) {
+                } else {
                     gererClic(grille_jeu, mx, my);
                 }
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
         SDL_RenderClear(renderer);
 
-        dessinerGrille(renderer, grille_jeu);
+        // Correction ici: On passe bien la solution pour les indices ET le jeu pour les cases
+        dessinerGrille(renderer, grille_jeu, grille_solution);
 
-        // Affichage du bouton avec texte
         SDL_RenderCopy(renderer, boutonFinis.texture, NULL, &boutonFinis.rect);
         SDL_RenderCopy(renderer, boutonFinis.texte, NULL, &boutonFinis.rect_texte);
 
@@ -633,26 +641,19 @@ void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window)
 
     SDL_Color blanc = {255, 255, 255, 255};
 
-    // Fond
     SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
     if (!texture_fond) return;
 
-
     Bouton btn_retour = creer_bouton("textures/btn_jouer.jpg", renderer, "Retour", font, 50, 50);
-
 
     int volume = Mix_VolumeMusic(-1);
     char txt_volume[32];
 
-
     snprintf(txt_volume, sizeof(txt_volume), "Volume: %d", volume);
-
-
 
     SDL_Surface *surf_vol = TTF_RenderText_Solid(font, txt_volume, blanc);
     SDL_Texture *tex_volume = SDL_CreateTextureFromSurface(renderer, surf_vol);
     SDL_FreeSurface(surf_vol);
-
 
     SDL_Rect rect_volume = {50, 150, 200, 30};
 
@@ -683,7 +684,6 @@ void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window)
         SDL_Delay(16);
     }
 
-    // Libération
     SDL_DestroyTexture(texture_fond);
     SDL_DestroyTexture(btn_retour.texture);
     SDL_DestroyTexture(btn_retour.texte);

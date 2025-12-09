@@ -1,7 +1,9 @@
 #include "fonctions.h"
 
+int main(int argc, char *argv[]) {
+    (void)argc;
+    (void)argv;
 
-int main(void) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         printf("Erreur SDL_Init : %s\n", SDL_GetError());
         return -1;
@@ -52,8 +54,9 @@ int main(void) {
 
     int largeurGrillePixels = grille_solution->largeur * TAILLE_CASE;
     int hauteurGrillePixels = grille_solution->hauteur * TAILLE_CASE;
-    int largeurFenetre      = largeurGrillePixels + BTN_W + 20;
-    int hauteurFenetre      = hauteurGrillePixels;
+
+    int largeurFenetre      = largeurGrillePixels + OFFSET_X + BTN_W + 50;
+    int hauteurFenetre      = hauteurGrillePixels + OFFSET_Y + 50;
 
     SDL_Window *fenetre = SDL_CreateWindow(
         "Picross",

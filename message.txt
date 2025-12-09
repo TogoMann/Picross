@@ -1,0 +1,178 @@
+# 🧩 Projet : **Picross interactif en C (avec SDL2)**
+
+## 🎯 Objectif
+
+Créer un **jeu Picross complet et interactif** avec :
+
+* Lecture/écriture de fichiers `.txt`
+* Sauvegarde/chargement de parties
+* Génération aléatoire de grilles
+* Interface graphique (SDL2)
+* Chronomètre, aide, sons, paramètres
+
+---
+
+## 👥 Équipe et rôles
+
+| Membre                                 | Rôle principal                                      | Domaines |
+| -------------------------------------- | --------------------------------------------------- | -------- |
+| **A — Logique & structures**           | Architecture du code, logique du jeu, vérifications |          |
+| **B — Gestion fichiers & sauvegardes** | Lecture/écriture, génération de grilles, paramètres |          |
+| **C — Interface graphique (SDL2)**     | Affichage, interactions utilisateur, sons, menu     |          |
+
+---
+
+## 📆 Vue d’ensemble des phases
+
+| Phase                             | Durée           | Objectif                                                           | Livrable          |
+| --------------------------------- | --------------- | ------------------------------------------------------------------ | ----------------- |
+| **Phase 1 – Prototype console**   | 21 oct → 11 nov | Jeu fonctionnel en terminal (sans SDL)                             | Prototype jouable |
+| **Phase 2 – Version finale SDL2** | 12 nov → 10 déc | Jeu complet avec interface graphique et toutes les fonctionnalités | Projet final      |
+
+---
+
+## ⚙️ Phase 1 – **Prototype Console (du 21 oct au 11 nov)**
+
+### 🧱 **Semaine 1 : 21–27 octobre – Conception & structures**
+
+**Objectif :** créer la base du code et charger une grille texte.
+
+| Membre | Tâches                                         | Détails techniques                                                   |
+| ------ | ---------------------------------------------- | -------------------------------------------------------------------- |
+| A      | Créer `fonctions.h` et définir `struct Grille` | Contient largeur, hauteur, tableau de cases, indices lignes/colonnes |
+| B      | Écrire `charger_grille()`                      | Lecture d’un fichier `.txt` et remplissage du tableau                |
+| C      | Écrire `afficher_grille_console()`             | Affichage clair en terminal (symboles “·”, “#”, “X”)                 |
+
+**Livrable :**
+→ `main.c` affiche une grille correctement chargée depuis un fichier texte.
+
+---
+
+### 🧠 **Semaine 2 : 28 oct – 3 nov – Logique du jeu**
+
+**Objectif :** permettre à l’utilisateur de jouer dans le terminal.
+
+| Membre | Tâches                                 | Détails techniques                                                      |
+| ------ | -------------------------------------- | ----------------------------------------------------------------------- |
+| A      | `modifier_case()`                      | Change l’état d’une case (pleine / vide / marquée) selon entrée clavier |
+| B      | `verifier_solution()`                  | Compare la grille du joueur à la solution                               |
+| C      | Boucle principale du jeu dans `main.c` | Gère saisies clavier, rafraîchit affichage, vérifie victoire            |
+
+**Livrable :**
+→ Jeu jouable en console (chargement, interaction, détection de victoire).
+
+---
+
+### 💾 **Semaine 3 : 4–10 nov – Sauvegarde et fin du prototype**
+
+**Objectif :** ajout des sauvegardes et finalisation du prototype.
+
+| Membre | Tâches                                       | Détails techniques                           |
+| ------ | -------------------------------------------- | -------------------------------------------- |
+| A      | `sauvegarder_partie()` et `charger_partie()` | Sauvegarde dans un fichier `.sav`            |
+| B      | `generer_grille_aleatoire()`                 | Crée de petites grilles pseudo-aléatoires    |
+| C      | Améliorer lisibilité console                 | Ajout de couleurs ANSI, symboles plus clairs |
+
+**Livrable prototype (11 novembre) :**
+
+* Grille jouable en console
+* Sauvegarde/reprise
+* Vérification automatique
+* Grilles aléatoires
+
+---
+
+## 🖥️ Phase 2 – **Version finale SDL2 (du 12 nov au 10 déc)**
+
+### 🪟 **Semaine 4 : 12–17 nov – Mise en place SDL2**
+
+**Objectif :** affichage d’une grille graphique.
+
+| Membre | Tâches                                             | Détails techniques                        |
+| ------ | -------------------------------------------------- | ----------------------------------------- |
+| A      | Adapter structures de données pour coordonnées SDL | Ajouter positions x,y et taille des cases |
+| B      | Charger textures, couleurs et initialiser SDL      | Fenêtre, renderer, boucle principale      |
+| C      | Implémenter affichage visuel de la grille          | Dessiner les cases selon leur état        |
+
+**Livrable :**
+→ Fenêtre SDL qui montre une grille statique.
+
+---
+
+### 🖱️ **Semaine 5 : 18–24 nov – Interaction utilisateur**
+
+**Objectif :** permettre de jouer avec la souris.
+
+| Membre | Tâches                                         | Détails techniques                           |
+| ------ | ---------------------------------------------- | -------------------------------------------- |
+| A      | Gestion des clics souris (remplir/vider cases) | Calcul des coordonnées cliquées              |
+| B      | Chronomètre de partie + mise à jour affichage  | Timer basé sur SDL_GetTicks()                |
+| C      | Rafraîchissement visuel et transitions         | Redessin dynamique de la grille après action |
+
+**Livrable :**
+→ Jeu jouable avec clics dans SDL2.
+
+---
+
+### ⚙️ **Semaine 6 : 25 nov – 1 déc – Fonctions avancées**
+
+**Objectif :** ajouter les fonctionnalités bonus.
+
+| Membre | Tâches                                                      | Détails techniques                       |
+| ------ | ----------------------------------------------------------- | ---------------------------------------- |
+| A      | “Solver automatique” et “Aide”                              | Révèle 1–2 cases correctes aléatoirement |
+| B      | Système de paramètres (volume, sons on/off, taille fenêtre) |                                          |
+| C      | Ajout de sons (SDL_mixer) + graphismes améliorés            |                                          |
+
+**Livrable :**
+→ Version presque complète, testable.
+
+---
+
+### 🧩 **Semaine 7–8 : 2–10 déc – Intégration et rendu final**
+
+**Objectif :** stabiliser, tester et rendre le projet.
+
+| Membre | Tâches                                                 | Détails techniques |
+| ------ | ------------------------------------------------------ | ------------------ |
+| A      | Debug logique et vérification victoire/perte           |                    |
+| B      | Finaliser sauvegarde/chargement SDL + exporter design  |                    |
+| C      | Menu principal, écran de victoire, finitions visuelles |                    |
+
+**Livrable final (10 décembre) :**
+
+* Jeu complet et stable en SDL2
+* Menu, sons, chrono, aide, sauvegarde
+* Rapport, Makefile, README
+
+---
+
+## 📁 Structure du projet
+
+```
+picross/
+├── main.c
+├── fonctions.c
+├── fonctions.h
+├── assets/
+│   ├── grilles/
+│   │   ├── grille1.txt
+│   │   ├── grille2.txt
+│   └── sons/
+│       ├── click.wav
+│       ├── victoire.wav
+├── sauvegardes/
+│   ├── partie1.sav
+├── Makefile
+├── README.md
+└── rapport.pdf
+```
+
+---
+
+## 💡 Bonus (si temps dispo)
+
+* Mode “grilles hexagonales”
+* Niveaux de difficulté (5x5, 10x10, 15x15)
+* Classement des meilleurs temps
+* Effet d’animation à la victoire

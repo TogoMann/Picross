@@ -1,5 +1,7 @@
 *.o
+*.d
 picross
+captures/
 .vscode/
 .DS_Store
 TRANCHO_C_2A_Projet_final.pdf

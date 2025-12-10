@@ -7,10 +7,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/stat.h>
-<<<<<<< HEAD
 #include <math.h>
-=======
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -26,7 +23,6 @@
 #define DEFAULT_WINDOW_H 768
 #define OFFSET_X_BASE 250
 #define OFFSET_Y_BASE 200
-<<<<<<< HEAD
 #define ETAT_VIDE 0
 #define ETAT_NOIR 1
 #define ETAT_MARQUE 2
@@ -38,17 +34,6 @@
 #define DOSSIER_CAPTURES "captures"
 #define FICHIER_SAUVEGARDE "sauvegarde.dat"
 
-=======
-#define ETAT_VIDE 0   
-#define ETAT_NOIR 1     
-#define ETAT_MARQUE 2    
-#define NOMBRE_INDICES 5
-
-#define DOSSIER_CAPTURES "captures"
-#define FICHIER_SAUVEGARDE "sauvegarde.dat"
-
-// Structure pour gérer le redimensionnement dynamique
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 typedef struct RenderContext {
     int window_w;
     int window_h;
@@ -65,13 +50,8 @@ typedef struct Grille {
     int largeur;
     int taille;
     int nombre_cases_noires;
-<<<<<<< HEAD
     int **indices_lignes;
     int **indices_colonnes;
-=======
-    int **indices_lignes; 
-    int **indices_colonnes; 
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     int *nb_indices_lignes;
     int *nb_indices_colonnes;
 } Grille;
@@ -83,10 +63,6 @@ typedef struct Bouton {
     SDL_Rect rect_texte;
 } Bouton;
 
-<<<<<<< HEAD
-=======
-// Structure pour la sauvegarde de partie
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 typedef struct Sauvegarde {
     int hauteur;
     int largeur;
@@ -103,7 +79,6 @@ void libererGrille(Grille *grille);
 void calculerEtStockerTousIndices(Grille *grille_solution);
 void libererIndices(Grille *grille);
 
-<<<<<<< HEAD
 void calculerRenderContext(RenderContext *ctx, int window_w, int window_h, Grille *grille);
 void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_solution, RenderContext *ctx, int mode);
 void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int y, TTF_Font *font);
@@ -111,15 +86,6 @@ void dessinerHexagone(SDL_Renderer *renderer, int cx, int cy, int rayon, int rem
 
 void gererClic(Grille *grille, int x, int y, RenderContext *ctx, int mode);
 void gererClicDroit(Grille *grille, int x, int y, RenderContext *ctx, int mode);
-=======
-// Fonctions de rendu avec contexte dynamique
-void calculerRenderContext(RenderContext *ctx, int window_w, int window_h, Grille *grille);
-void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_solution, RenderContext *ctx);
-void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int y, TTF_Font *font);
-
-void gererClic(Grille *grille, int x, int y, RenderContext *ctx);
-void gererClicDroit(Grille *grille, int x, int y, RenderContext *ctx);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 void Verification(Grille *grille_solution, Grille *grille_jeu);
 int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size_t *out_cols);
 void free_grid(int **grid, size_t rows);
@@ -128,18 +94,10 @@ int compare_grids(const int * const *g1, const int * const *g2, size_t rows, siz
 int check_grids_from_files(const char *player_path, const char *solution_path);
 int grillesIdentiques(Grille *grille_solution, Grille *grille_jeu);
 
-<<<<<<< HEAD
-=======
-// Écran de fin avec option de sauvegarde
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *message, int victoire, Uint32 temps_total);
 int sauvegarderCapture(SDL_Renderer *renderer, SDL_Window *window, const char *nom_fichier);
 void creerDossierSiAbsent(const char *chemin);
 
-<<<<<<< HEAD
-=======
-// Fonctions de sauvegarde/chargement de partie
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 int sauvegarderPartie(Grille *grille_solution, Grille *grille_jeu, Uint32 temps_ecoule);
 int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_ecoule);
 int partieExiste(void);
@@ -151,20 +109,10 @@ Bouton creer_bouton_simple(SDL_Renderer *renderer, const char *label, TTF_Font *
 bool Clique(int souris_x, int souris_y, Bouton b);
 
 void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels);
-<<<<<<< HEAD
 int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels, Uint32 temps_initial, int mode);
 void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window);
 void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels);
 void Menu_selection_niveau_predefini(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels);
-
-Grille *genererGrilleAleatoire(int taille);
-void indice(Grille *grille_solution, Grille *grille_jeu);
-=======
-int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels, Uint32 temps_initial);
-void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window);
-void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels);
-void Menu_selection_niveau_predefini(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
 Grille *genererGrilleAleatoire(int taille);
 void indice(Grille *grille_solution, Grille *grille_jeu);

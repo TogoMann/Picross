@@ -5,7 +5,6 @@ int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
-    // Initialiser le générateur aléatoire
     srand((unsigned int)time(NULL));
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -27,7 +26,7 @@ int main(int argc, char *argv[]) {
     }
     Grille *grille_solution = NULL;
     Grille *grille_jeu = NULL;
-    int largeurFenetre = DEFAULT_WINDOW_W; 
+    int largeurFenetre = DEFAULT_WINDOW_W;
     int hauteurFenetre = DEFAULT_WINDOW_H;
     int largeurGrillePixels = 0;
     int hauteurGrillePixels = 0;
@@ -47,7 +46,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    SDL_Renderer *rendu = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_SOFTWARE); 
+    SDL_Renderer *rendu = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
     if (!rendu) {
         printf("Impossible de créer le renderer.\n");
         SDL_DestroyWindow(fenetre);
@@ -60,9 +59,9 @@ int main(int argc, char *argv[]) {
 
     SDL_DestroyRenderer(rendu);
     SDL_DestroyWindow(fenetre);
-    
+
     if (grille_jeu) libererGrille(grille_jeu);
-    if (grille_solution) libererGrille(grille_solution); 
+    if (grille_solution) libererGrille(grille_solution);
 
     Mix_CloseAudio();
     TTF_Quit();

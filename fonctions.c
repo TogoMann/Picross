@@ -1,11 +1,5 @@
 #include "fonctions.h"
 
-<<<<<<< HEAD
-=======
-// ============================================================================
-// FONCTION DE CRÉATION DE DOSSIER
-// ============================================================================
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 void creerDossierSiAbsent(const char *chemin) {
     struct stat st = {0};
     if (stat(chemin, &st) == -1) {
@@ -18,24 +12,14 @@ void creerDossierSiAbsent(const char *chemin) {
     }
 }
 
-<<<<<<< HEAD
 int sauvegarderPartie(Grille *grille_solution, Grille *grille_jeu, Uint32 temps_ecoule) {
     if (!grille_solution || !grille_jeu) return -1;
 
-=======
-// ============================================================================
-// FONCTIONS DE SAUVEGARDE/CHARGEMENT DE PARTIE
-// ============================================================================
-int sauvegarderPartie(Grille *grille_solution, Grille *grille_jeu, Uint32 temps_ecoule) {
-    if (!grille_solution || !grille_jeu) return -1;
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     FILE *f = fopen(FICHIER_SAUVEGARDE, "wb");
     if (!f) {
         printf("Erreur: Impossible de créer le fichier de sauvegarde\n");
         return -1;
     }
-<<<<<<< HEAD
 
     fwrite(&grille_solution->hauteur, sizeof(int), 1, f);
     fwrite(&grille_solution->largeur, sizeof(int), 1, f);
@@ -50,26 +34,6 @@ int sauvegarderPartie(Grille *grille_solution, Grille *grille_jeu, Uint32 temps_
         fwrite(grille_jeu->cases[y], sizeof(int), grille_jeu->largeur, f);
     }
 
-=======
-    
-    // Écrire les dimensions
-    fwrite(&grille_solution->hauteur, sizeof(int), 1, f);
-    fwrite(&grille_solution->largeur, sizeof(int), 1, f);
-    
-    // Écrire le temps écoulé
-    fwrite(&temps_ecoule, sizeof(Uint32), 1, f);
-    
-    // Écrire la grille solution
-    for (int y = 0; y < grille_solution->hauteur; ++y) {
-        fwrite(grille_solution->cases[y], sizeof(int), grille_solution->largeur, f);
-    }
-    
-    // Écrire la grille de jeu (état actuel du joueur)
-    for (int y = 0; y < grille_jeu->hauteur; ++y) {
-        fwrite(grille_jeu->cases[y], sizeof(int), grille_jeu->largeur, f);
-    }
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     fclose(f);
     printf("Partie sauvegardée avec succès!\n");
     return 0;
@@ -81,46 +45,24 @@ int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_e
         printf("Erreur: Aucune sauvegarde trouvée\n");
         return -1;
     }
-<<<<<<< HEAD
 
     int hauteur, largeur;
     Uint32 temps;
 
-=======
-    
-    int hauteur, largeur;
-    Uint32 temps;
-    
-    // Lire les dimensions
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (fread(&hauteur, sizeof(int), 1, f) != 1 ||
         fread(&largeur, sizeof(int), 1, f) != 1) {
         fclose(f);
         return -1;
     }
-<<<<<<< HEAD
 
-=======
-    
-    // Lire le temps
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (fread(&temps, sizeof(Uint32), 1, f) != 1) {
         fclose(f);
         return -1;
     }
-<<<<<<< HEAD
 
     if (*grille_solution) libererGrille(*grille_solution);
     if (*grille_jeu) libererGrille(*grille_jeu);
 
-=======
-    
-    // Libérer les anciennes grilles si nécessaire
-    if (*grille_solution) libererGrille(*grille_solution);
-    if (*grille_jeu) libererGrille(*grille_jeu);
-    
-    // Créer la grille solution
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     *grille_solution = malloc(sizeof(Grille));
     if (!*grille_solution) {
         fclose(f);
@@ -134,12 +76,7 @@ int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_e
     (*grille_solution)->indices_colonnes = NULL;
     (*grille_solution)->nb_indices_lignes = NULL;
     (*grille_solution)->nb_indices_colonnes = NULL;
-<<<<<<< HEAD
 
-=======
-    
-    // Allouer et lire les cases de la solution
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     (*grille_solution)->cases = malloc(hauteur * sizeof(int*));
     for (int y = 0; y < hauteur; ++y) {
         (*grille_solution)->cases[y] = malloc(largeur * sizeof(int));
@@ -149,22 +86,13 @@ int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_e
             *grille_solution = NULL;
             return -1;
         }
-<<<<<<< HEAD
-=======
-        // Compter les cases noires
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         for (int x = 0; x < largeur; ++x) {
             if ((*grille_solution)->cases[y][x] == ETAT_NOIR) {
                 (*grille_solution)->nombre_cases_noires++;
             }
         }
     }
-<<<<<<< HEAD
 
-=======
-    
-    // Créer la grille de jeu
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     *grille_jeu = malloc(sizeof(Grille));
     if (!*grille_jeu) {
         fclose(f);
@@ -180,12 +108,7 @@ int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_e
     (*grille_jeu)->indices_colonnes = NULL;
     (*grille_jeu)->nb_indices_lignes = NULL;
     (*grille_jeu)->nb_indices_colonnes = NULL;
-<<<<<<< HEAD
 
-=======
-    
-    // Allouer et lire les cases du jeu
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     (*grille_jeu)->cases = malloc(hauteur * sizeof(int*));
     for (int y = 0; y < hauteur; ++y) {
         (*grille_jeu)->cases[y] = malloc(largeur * sizeof(int));
@@ -198,20 +121,11 @@ int chargerPartie(Grille **grille_solution, Grille **grille_jeu, Uint32 *temps_e
             return -1;
         }
     }
-<<<<<<< HEAD
 
     fclose(f);
 
     calculerEtStockerTousIndices(*grille_solution);
 
-=======
-    
-    fclose(f);
-    
-    // Calculer les indices pour la solution
-    calculerEtStockerTousIndices(*grille_solution);
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     *temps_ecoule = temps;
     printf("Partie chargée avec succès! Temps: %u ms\n", temps);
     return 0;
@@ -231,7 +145,6 @@ void supprimerSauvegarde(void) {
     printf("Sauvegarde supprimée.\n");
 }
 
-<<<<<<< HEAD
 void calculerRenderContext(RenderContext *ctx, int window_w, int window_h, Grille *grille) {
     if (!ctx || !grille) return;
 
@@ -254,45 +167,10 @@ void calculerRenderContext(RenderContext *ctx, int window_w, int window_h, Grill
     ctx->offset_x = (int)(OFFSET_X_BASE * ctx->scale);
     ctx->offset_y = (int)(OFFSET_Y_BASE * ctx->scale);
 
-=======
-// ============================================================================
-// FONCTION DE CALCUL DU CONTEXTE DE RENDU (pour redimensionnement)
-// ============================================================================
-void calculerRenderContext(RenderContext *ctx, int window_w, int window_h, Grille *grille) {
-    if (!ctx || !grille) return;
-    
-    ctx->window_w = window_w;
-    ctx->window_h = window_h;
-    
-    // Calculer l'espace disponible pour la grille
-    int espace_grille_w = window_w - OFFSET_X_BASE - 50;  // Marge droite
-    int espace_grille_h = window_h - OFFSET_Y_BASE - 50;  // Marge basse
-    
-    // Calculer la taille de case optimale
-    int taille_par_largeur = espace_grille_w / grille->largeur;
-    int taille_par_hauteur = espace_grille_h / grille->hauteur;
-    
-    // Prendre la plus petite pour que tout rentre
-    ctx->taille_case = (taille_par_largeur < taille_par_hauteur) ? taille_par_largeur : taille_par_hauteur;
-    
-    // Limiter la taille minimale et maximale
-    if (ctx->taille_case < 15) ctx->taille_case = 15;
-    if (ctx->taille_case > 50) ctx->taille_case = 50;
-    
-    // Calculer le facteur d'échelle
-    ctx->scale = (float)ctx->taille_case / TAILLE_CASE_BASE;
-    
-    // Ajuster les offsets en fonction de l'échelle
-    ctx->offset_x = (int)(OFFSET_X_BASE * ctx->scale);
-    ctx->offset_y = (int)(OFFSET_Y_BASE * ctx->scale);
-    
-    // S'assurer que les offsets ne sont pas trop petits
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (ctx->offset_x < 150) ctx->offset_x = 150;
     if (ctx->offset_y < 120) ctx->offset_y = 120;
 }
 
-<<<<<<< HEAD
 void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int y, TTF_Font *font) {
     if (!renderer || !font) return;
 
@@ -303,22 +181,6 @@ void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int
     char buffer[32];
     snprintf(buffer, sizeof(buffer), "Temps: %02u:%02u", minutes, secondes);
 
-=======
-// ============================================================================
-// FONCTION DE DESSIN DU CHRONOMÈTRE
-// ============================================================================
-void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int y, TTF_Font *font) {
-    if (!renderer || !font) return;
-    
-    // Convertir en minutes:secondes
-    Uint32 secondes_totales = temps_ecoule / 1000;
-    Uint32 minutes = secondes_totales / 60;
-    Uint32 secondes = secondes_totales % 60;
-    
-    char buffer[32];
-    snprintf(buffer, sizeof(buffer), "Temps: %02u:%02u", minutes, secondes);
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     SDL_Color blanc = {255, 255, 255, 255};
     SDL_Surface *surf = TTF_RenderText_Solid(font, buffer, blanc);
     if (surf) {
@@ -332,7 +194,6 @@ void dessinerChronometre(SDL_Renderer *renderer, Uint32 temps_ecoule, int x, int
 
 Bouton creer_bouton_simple(SDL_Renderer *renderer, const char *label, TTF_Font *font, int x, int y, SDL_Color bg_color) {
     Bouton b;
-<<<<<<< HEAD
     b.texture = NULL;
 
     SDL_Color blanc = {255, 255, 255, 255};
@@ -343,42 +204,20 @@ Bouton creer_bouton_simple(SDL_Renderer *renderer, const char *label, TTF_Font *
     int text_h = surf_texte->h;
     SDL_FreeSurface(surf_texte);
 
-=======
-    b.texture = NULL;  // Pas de texture image
-    
-    SDL_Color blanc = {255, 255, 255, 255};
-    SDL_Surface *surf_texte = TTF_RenderText_Solid(font, label, blanc);
-    b.texte = SDL_CreateTextureFromSurface(renderer, surf_texte);
-    
-    int text_w = surf_texte->w;
-    int text_h = surf_texte->h;
-    SDL_FreeSurface(surf_texte);
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     b.rect.x = x;
     b.rect.y = y;
     b.rect.w = text_w + 40;
     b.rect.h = text_h + 20;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     b.rect_texte.w = text_w;
     b.rect_texte.h = text_h;
     b.rect_texte.x = b.rect.x + (b.rect.w - text_w) / 2;
     b.rect_texte.y = b.rect.y + (b.rect.h - text_h) / 2;
-<<<<<<< HEAD
 
-=======
-    
-    // Créer une texture de fond colorée
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     SDL_Surface *bg_surf = SDL_CreateRGBSurface(0, b.rect.w, b.rect.h, 32, 0, 0, 0, 0);
     SDL_FillRect(bg_surf, NULL, SDL_MapRGB(bg_surf->format, bg_color.r, bg_color.g, bg_color.b));
     b.texture = SDL_CreateTextureFromSurface(renderer, bg_surf);
     SDL_FreeSurface(bg_surf);
-<<<<<<< HEAD
 
     return b;
 }
@@ -397,72 +236,28 @@ int sauvegarderCapture(SDL_Renderer *renderer, SDL_Window *window, const char *n
     SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32,
         0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
-=======
-    
-    return b;
-}
-
-// ============================================================================
-// FONCTION DE SAUVEGARDE DE CAPTURE D'ÉCRAN
-// ============================================================================
-int sauvegarderCapture(SDL_Renderer *renderer, SDL_Window *window, const char *nom_fichier) {
-    if (!renderer || !window || !nom_fichier) return -1;
-    
-    // Créer le dossier captures s'il n'existe pas
-    creerDossierSiAbsent(DOSSIER_CAPTURES);
-    
-    // Construire le chemin complet
-    char chemin_complet[512];
-    snprintf(chemin_complet, sizeof(chemin_complet), "%s/%s", DOSSIER_CAPTURES, nom_fichier);
-    
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    
-    // Créer une surface pour la capture
-    SDL_Surface *surface = SDL_CreateRGBSurface(0, w, h, 32,
-        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (!surface) {
         printf("Erreur création surface: %s\n", SDL_GetError());
         return -1;
     }
-<<<<<<< HEAD
 
-=======
-    
-    // Lire les pixels du renderer
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (SDL_RenderReadPixels(renderer, NULL, surface->format->format,
                              surface->pixels, surface->pitch) != 0) {
         printf("Erreur lecture pixels: %s\n", SDL_GetError());
         SDL_FreeSurface(surface);
         return -1;
     }
-<<<<<<< HEAD
 
-=======
-    
-    // Sauvegarder en PNG dans le dossier captures
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (IMG_SavePNG(surface, chemin_complet) != 0) {
         printf("Erreur sauvegarde PNG: %s\n", IMG_GetError());
         SDL_FreeSurface(surface);
         return -1;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     SDL_FreeSurface(surface);
     printf("Capture sauvegardée: %s\n", chemin_complet);
     return 0;
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
 static int **allouerCases(int hauteur, int largeur) {
     int **cases = malloc(hauteur * sizeof(int *));
@@ -513,11 +308,7 @@ Grille *chargerGrillesolution(FILE *fichier) {
         }
         int count = 0;
 
-<<<<<<< HEAD
         for (size_t i = 0; i < longueur; ++i)
-=======
-        for (size_t i = 0; i < longueur; ++i) 
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         {
             if (ligne[i] == '0' || ligne[i] == '1')
             {
@@ -574,11 +365,6 @@ Grille *chargerGrillesolution(FILE *fichier) {
     g->taille = hauteur * largeur;
     g->nombre_cases_noires = nb_noires;
 
-<<<<<<< HEAD
-=======
-   
-
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     g->indices_lignes = NULL;
     g->indices_colonnes = NULL;
     g->nb_indices_lignes = NULL;
@@ -586,7 +372,6 @@ Grille *chargerGrillesolution(FILE *fichier) {
 
     return g;
 }
-
 
 Grille *chargerGrille(Grille *grille_solution) {
 
@@ -615,11 +400,7 @@ Grille *chargerGrille(Grille *grille_solution) {
     g->indices_colonnes = NULL;
     g->nb_indices_lignes = NULL;
     g->nb_indices_colonnes = NULL;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     return g;
 }
 
@@ -642,18 +423,10 @@ int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size
     while (fgets(ligne, sizeof(ligne), fichier)) {
         size_t longueur = strlen(ligne);
 
-<<<<<<< HEAD
-=======
-        // Supprimer les caractères de fin de ligne
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         while (longueur > 0 && (ligne[longueur - 1] == '\n' || ligne[longueur - 1] == '\r')) {
             ligne[--longueur] = '\0';
         }
 
-<<<<<<< HEAD
-=======
-        // Compter les 0 et 1
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         size_t count = 0;
         for (size_t i = 0; i < longueur; ++i) {
             if (ligne[i] == '0' || ligne[i] == '1') {
@@ -663,10 +436,6 @@ int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size
 
         if (count == 0) continue;
 
-<<<<<<< HEAD
-=======
-        // Vérifier la largeur
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         if (largeur == 0) {
             largeur = count;
         } else if (largeur != count) {
@@ -676,10 +445,6 @@ int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size
             return -1;
         }
 
-<<<<<<< HEAD
-=======
-        // Réallouer si nécessaire
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         if (hauteur >= capacite) {
             size_t nouvelle_capacite = (capacite == 0) ? 4 : capacite * 2;
             int **nouv = realloc(cases, nouvelle_capacite * sizeof(int *));
@@ -693,10 +458,6 @@ int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size
             capacite = nouvelle_capacite;
         }
 
-<<<<<<< HEAD
-=======
-        // Allouer et remplir la ligne
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         int *row = malloc(largeur * sizeof(int));
         if (!row) {
             for (size_t r = 0; r < hauteur; ++r) free(cases[r]);
@@ -761,11 +522,7 @@ void libererIndices(Grille *grille)
         printf("Erreur chargement grille pour libérer indices\n");
         return;
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (grille->indices_lignes)
     {
         for (int i = 0; i < grille->hauteur; ++i)
@@ -786,11 +543,7 @@ void libererIndices(Grille *grille)
 
     free(grille->nb_indices_lignes);
     free(grille->nb_indices_colonnes);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     grille->indices_lignes = NULL;
     grille->indices_colonnes = NULL;
     grille->nb_indices_lignes = NULL;
@@ -804,32 +557,18 @@ void calculerEtStockerTousIndices(Grille *grille_solution){
         printf("Erreur de chargement grille pour stockage indice\n");
         return;
     }
-<<<<<<< HEAD
 
     int H = grille_solution->hauteur;
     int L = grille_solution->largeur;
 
-=======
-    
-    int H = grille_solution->hauteur;
-    int L = grille_solution->largeur;
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     grille_solution->indices_lignes = malloc(H * sizeof(int*));
     grille_solution->indices_colonnes = malloc(L * sizeof(int*));
     grille_solution->nb_indices_lignes = malloc(H * sizeof(int));
     grille_solution->nb_indices_colonnes = malloc(L * sizeof(int));
-<<<<<<< HEAD
 
     if (!grille_solution->indices_lignes || !grille_solution->indices_colonnes || !grille_solution->nb_indices_lignes || !grille_solution->nb_indices_colonnes) {
         libererIndices(grille_solution);
         return;
-=======
-    
-    if (!grille_solution->indices_lignes || !grille_solution->indices_colonnes || !grille_solution->nb_indices_lignes || !grille_solution->nb_indices_colonnes) {
-        libererIndices(grille_solution); 
-        return; 
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     }
 
     for (int y = 0; y < H; ++y)
@@ -848,11 +587,7 @@ void calculerEtStockerTousIndices(Grille *grille_solution){
         {
             col[y] = grille_solution->cases[y][x];
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         int nb;
         int *indices = calculerIndices(col, H, &nb);
         grille_solution->indices_colonnes[x] = indices;
@@ -868,11 +603,7 @@ void libererGrille(Grille *grille)
         return;
     }
 
-<<<<<<< HEAD
     libererIndices(grille);
-=======
-    libererIndices(grille); 
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
     if (grille->cases)
     {
@@ -885,7 +616,6 @@ void libererGrille(Grille *grille)
     free(grille);
 }
 
-<<<<<<< HEAD
 void dessinerHexagone(SDL_Renderer *renderer, int cx, int cy, int rayon, int rempli, SDL_Color couleur) {
     Sint16 vx[6], vy[6];
     for (int i = 0; i < 6; i++) {
@@ -1119,188 +849,11 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_s
             }
             if (indices_alloues) free(indices);
         }
-=======
-void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_solution, RenderContext *ctx) {
-
-    if (!grille_jeu || !grille_solution || !renderer || !ctx)
-    {
-        printf("Erreur dessin grille (manque renderer, grille de jeu, grille de solution ou contexte)\n");
-        return;
-    }
-
-    if (grille_solution->hauteur == 0 || grille_solution->largeur == 0)
-    {
-        printf("La grille est vide\n");
-        return;
-    }
-    
-    int OFFSET_X = ctx->offset_x;
-    int OFFSET_Y = ctx->offset_y;
-    int TAILLE_CASE = ctx->taille_case;
-    
-    SDL_Rect fondGauche = {0, OFFSET_Y, OFFSET_X, grille_solution->hauteur * TAILLE_CASE};
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
-    SDL_RenderFillRect(renderer, &fondGauche);
-
-    SDL_Rect fondHaut = {OFFSET_X, 0, grille_solution->largeur * TAILLE_CASE, OFFSET_Y};
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); 
-    SDL_RenderFillRect(renderer, &fondHaut);
-    
-    SDL_Rect coinHautGauche = {0, 0, OFFSET_X, OFFSET_Y};
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); 
-    SDL_RenderFillRect(renderer, &coinHautGauche);
-
-    for (int y = 0; y < grille_jeu->hauteur; ++y)
-    {
-        for (int x = 0; x < grille_jeu->largeur; ++x)
-        {
-            SDL_Rect rect = {x * TAILLE_CASE + OFFSET_X + 1, y * TAILLE_CASE + OFFSET_Y + 1, TAILLE_CASE - 2, TAILLE_CASE - 2};
-            
-       
-            if (grille_jeu->cases[y][x] == ETAT_NOIR)
-            { 
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            }
-            else
-            { 
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            }
-            SDL_RenderFillRect(renderer, &rect);
-            
-        
-            if (grille_jeu->cases[y][x] == ETAT_MARQUE)
-            { 
-                int x1 = x * TAILLE_CASE + OFFSET_X;
-                int y1 = y * TAILLE_CASE + OFFSET_Y;
-                int x2 = x1 + TAILLE_CASE;
-                int y2 = y1 + TAILLE_CASE;
-                int PADDING = TAILLE_CASE / 6; 
-                
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
-                SDL_RenderDrawLine(renderer, x1 + PADDING, y1 + PADDING, x2 - PADDING, y2 - PADDING);
-                SDL_RenderDrawLine(renderer, x2 - PADDING, y1 + PADDING, x1 + PADDING, y2 - PADDING);
-            }
-        }
-    }
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    for (int y = 0; y <= grille_solution->hauteur; ++y)
-    {
-        SDL_RenderDrawLine(renderer, 0, OFFSET_Y + y * TAILLE_CASE, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y + y * TAILLE_CASE);
-    }
-
-    for (int x = 0; x <= grille_solution->largeur; ++x)
-    {
-        SDL_RenderDrawLine(renderer, OFFSET_X + x * TAILLE_CASE, 0, OFFSET_X + x * TAILLE_CASE, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
-    }
-
-    SDL_RenderDrawLine(renderer, 0, OFFSET_Y, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y);
-    SDL_RenderDrawLine(renderer, OFFSET_X, 0, OFFSET_X, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
-
-    // Adapter la taille de police à l'échelle
-    int font_size = (int)(18 * ctx->scale);
-    if (font_size < 10) font_size = 10;
-    if (font_size > 24) font_size = 24;
-    
-    TTF_Font *font = TTF_OpenFont("fonts/sans.ttf", font_size);
-
-    if (!font)
-    {
-        printf("Erreur de chargement de la police d'écriture\n");
-        return; 
-    }
-
-    SDL_Color couleurTexte = {0, 0, 0, 255};
-
-    // Afficher les indices des lignes
-    for (int y = 0; y < grille_solution->hauteur; ++y)
-    {
-        int nb;
-        int *indices;
-        int indices_alloues = 0;
-        
-        if (grille_solution->indices_lignes && grille_solution->nb_indices_lignes) {
-            indices = grille_solution->indices_lignes[y];
-            nb = grille_solution->nb_indices_lignes[y];
-        } else {
-            indices = calculerIndices(grille_solution->cases[y], grille_solution->largeur, &nb);
-            indices_alloues = 1;
-        }
-        
-        int espace = (int)(25 * ctx->scale);
-        if (espace < 15) espace = 15;
-
-        for (int i = 0; i < nb; ++i)
-        {
-            char buf[12];
-            snprintf(buf, sizeof(buf), "%d", indices[i]);
-            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, couleurTexte);
-            if(surf) {
-                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
-                int tw = surf->w;
-                int th = surf->h;
-                SDL_FreeSurface(surf);
-                
-                int pos_x = OFFSET_X - ((nb - i) * espace) + (espace - tw) / 2;
-                int pos_y = y * TAILLE_CASE + OFFSET_Y + (TAILLE_CASE - th) / 2;
-
-                SDL_Rect r = { pos_x, pos_y, tw, th };
-                SDL_RenderCopy(renderer, tex, NULL, &r);
-                SDL_DestroyTexture(tex);
-            }
-        }
-        if (indices_alloues) free(indices);
-    }
-
-    // Afficher les indices des colonnes
-    for (int x = 0; x < grille_solution->largeur; ++x)
-    {
-        int nb;
-        int *indices;
-        int indices_alloues = 0;
-        
-        if (grille_solution->indices_colonnes && grille_solution->nb_indices_colonnes) {
-            indices = grille_solution->indices_colonnes[x];
-            nb = grille_solution->nb_indices_colonnes[x];
-        } else {
-            int col[grille_solution->hauteur];
-            for (int y = 0; y < grille_solution->hauteur; ++y) col[y] = grille_solution->cases[y][x];
-            indices = calculerIndices(col, grille_solution->hauteur, &nb);
-            indices_alloues = 1;
-        }
-        
-        int espace = (int)(20 * ctx->scale);
-        if (espace < 12) espace = 12;
-
-        for (int i = 0; i < nb; ++i)
-        {
-            char b[12];
-
-            snprintf(b, sizeof(b), "%d", indices[i]);
-
-            SDL_Surface *surf = TTF_RenderText_Solid(font, b, couleurTexte);
-            if(surf)
-            {
-                SDL_Texture *tx = SDL_CreateTextureFromSurface(renderer, surf);
-                int tw = surf->w;
-                int th = surf->h;
-                SDL_FreeSurface(surf);
-                
-                int pos_x = x * TAILLE_CASE + OFFSET_X + (TAILLE_CASE - tw) / 2;
-                int pos_y = OFFSET_Y - ((nb - i) * espace) + (espace - th) / 2;
-
-                SDL_Rect r = { pos_x, pos_y, tw, th };
-                SDL_RenderCopy(renderer, tx, NULL, &r);
-                SDL_DestroyTexture(tx);
-            }
-        }
-        if (indices_alloues) free(indices);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     }
 
     TTF_CloseFont(font);
 }
 
-<<<<<<< HEAD
 void gererClicDroit(Grille *grille, int x, int y, RenderContext *ctx, int mode)
 {
     if (!grille || !ctx) return;
@@ -1381,74 +934,10 @@ void Verification(Grille *grille_solution, Grille *grille_jeu) {
         return;
     }
     if (grille_solution->hauteur != grille_jeu->hauteur || grille_solution->largeur != grille_jeu->largeur) {
-=======
-void gererClicDroit(Grille *grille, int x, int y, RenderContext *ctx)
-{
-    if (!grille || !ctx)
-    {
-        printf("Erreur chargement grille pour clic droit\n");
-        return;
-    }
-
-    int col = (x - ctx->offset_x) / ctx->taille_case;
-    int lig = (y - ctx->offset_y) / ctx->taille_case;
-
-    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur)
-    {
-        return;
-    }
-
-    if (grille->cases[lig][col] == ETAT_VIDE)
-    {
-        grille->cases[lig][col] = ETAT_MARQUE;
-
-    }
-    else if (grille->cases[lig][col] == ETAT_MARQUE)
-    {
-        grille->cases[lig][col] = ETAT_VIDE;
-    }
-}
-
-void gererClic(Grille *grille, int x, int y, RenderContext *ctx)
-{
-    if (!grille || !ctx)
-    {
-        return;
-    }
-
-    int col = (x - ctx->offset_x) / ctx->taille_case;
-    int lig = (y - ctx->offset_y) / ctx->taille_case;
-
-    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur)
-    {
-        return;
-    }
-
-    if (grille->cases[lig][col] == ETAT_MARQUE)
-    {
-        grille->cases[lig][col] = ETAT_VIDE;
-    }
-
-    grille->cases[lig][col] = (grille->cases[lig][col] == ETAT_NOIR) ? ETAT_VIDE : ETAT_NOIR;
-}
-
-void Verification(Grille *grille_solution, Grille *grille_jeu) {
-
-
-    if (!grille_solution || !grille_jeu)
-    {
-        printf("Erreur chargement grille jeu ou solution pour vérifications\n");
-        return;
-    }
-
-    if (grille_solution->hauteur != grille_jeu->hauteur || grille_solution->largeur != grille_jeu->largeur)
-    {
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         printf("Flop ! (dimensions différentes)\n");
         return;
     }
     int ok = 1;
-<<<<<<< HEAD
     for (int y = 0; y < grille_solution->hauteur; ++y) {
         for (int x = 0; x < grille_solution->largeur; ++x) {
             int jeu_case = grille_jeu->cases[y][x];
@@ -1465,48 +954,6 @@ void Verification(Grille *grille_solution, Grille *grille_jeu) {
     }
     if (ok) printf("Tout bon !\n"); else printf("Flop !\n");
 }
-=======
-
-    for (int y = 0; y < grille_solution->hauteur; ++y)
-    {
-        for (int x = 0; x < grille_solution->largeur; ++x)
-        {
-            
-            int jeu_case = grille_jeu->cases[y][x];
-            int sol_case = grille_solution->cases[y][x];
-            
-            // Traiter ETAT_MARQUE (2) comme ETAT_VIDE (0) pour la comparaison
-            int jeu_effectif = (jeu_case == ETAT_MARQUE) ? ETAT_VIDE : jeu_case;
-            
-            if (sol_case == ETAT_NOIR) {
-          
-                if (jeu_effectif != ETAT_NOIR)
-                {
-                    ok = 0;
-                    break; 
-                }
-            } 
-      
-            else { 
-          
-                if (jeu_effectif == ETAT_NOIR) {
-                    ok = 0;
-                    break; 
-                }
-            }
-        }
-        
-        if (!ok) break; 
-    }
-
-    if (ok) {
-        printf("Tout bon !\n");
-    } else {
-        printf("Flop !\n");
-    }
-}
-
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
 void free_grid(int **grid, size_t rows) {
     if (!grid) return;
@@ -1557,7 +1004,6 @@ int check_grids_from_files(const char *player_path, const char *solution_path) {
 int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *message, int victoire, Uint32 temps_total) {
     int w = 0, h = 0;
     SDL_GetWindowSize(window, &w, &h);
-<<<<<<< HEAD
 
     TTF_Font *font = TTF_OpenFont("fonts/font.otf", 36);
     TTF_Font *font_small = TTF_OpenFont("fonts/sans.ttf", 24);
@@ -1580,55 +1026,19 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
         btn_non = creer_bouton_simple(renderer, "NON", font_small, w/2 + 20, h/2 + 100, rouge);
         has_buttons = 1;
     }
-=======
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
-    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 36);
-    TTF_Font *font_small = TTF_OpenFont("fonts/sans.ttf", 24);
-    
-    if (!font || !font_small) {
-        if (font) TTF_CloseFont(font);
-        if (font_small) TTF_CloseFont(font_small);
-        return 0;
-    }
-    
-    SDL_Color blanc = {255, 255, 255, 255};
-    SDL_Color vert = {50, 200, 50, 255};
-    SDL_Color rouge = {200, 50, 50, 255};
-    
-    // Créer les boutons OUI et NON (seulement si victoire)
-    Bouton btn_oui, btn_non;
-    int has_buttons = 0;
-    
-    if (victoire) {
-        btn_oui = creer_bouton_simple(renderer, "OUI", font_small, w/2 - 120, h/2 + 100, vert);
-        btn_non = creer_bouton_simple(renderer, "NON", font_small, w/2 + 20, h/2 + 100, rouge);
-        has_buttons = 1;
-    }
-    
     int enCours = 1;
-<<<<<<< HEAD
     int sauvegarde_acceptee = 0;
-=======
-    int sauvegarde_acceptee = 0;  // 1 si l'utilisateur veut garder la capture
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     SDL_Event e;
 
     while (enCours) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) {
                 enCours = 0;
-<<<<<<< HEAD
             }
             else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
                 int mx = e.button.x, my = e.button.y;
 
-=======
-            } 
-            else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
-                int mx = e.button.x, my = e.button.y;
-                
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                 if (has_buttons) {
                     if (Clique(mx, my, btn_oui)) {
                         sauvegarde_acceptee = 1;
@@ -1639,10 +1049,6 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
                         enCours = 0;
                     }
                 } else {
-<<<<<<< HEAD
-=======
-                    // Pas de victoire, clic pour fermer
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                     enCours = 0;
                 }
             }
@@ -1653,7 +1059,6 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
             }
         }
 
-<<<<<<< HEAD
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
         SDL_Rect fond = {w/4, h/4, w/2, h/2};
         SDL_RenderFillRect(renderer, &fond);
@@ -1661,18 +1066,6 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderDrawRect(renderer, &fond);
 
-=======
-        // Fond semi-transparent
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
-        SDL_Rect fond = {w/4, h/4, w/2, h/2};
-        SDL_RenderFillRect(renderer, &fond);
-        
-        // Bordure
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderDrawRect(renderer, &fond);
-
-        // Message principal
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_Surface *surf_msg = TTF_RenderText_Solid(font, message, blanc);
         if (surf_msg) {
             SDL_Texture *tex_msg = SDL_CreateTextureFromSurface(renderer, surf_msg);
@@ -1681,22 +1074,13 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
             SDL_RenderCopy(renderer, tex_msg, NULL, &rect_msg);
             SDL_DestroyTexture(tex_msg);
         }
-<<<<<<< HEAD
 
-=======
-        
-        // Afficher le temps
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         Uint32 secondes = temps_total / 1000;
         Uint32 minutes = secondes / 60;
         secondes = secondes % 60;
         char temps_str[64];
         snprintf(temps_str, sizeof(temps_str), "Temps: %02u:%02u", minutes, secondes);
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_Surface *surf_temps = TTF_RenderText_Solid(font_small, temps_str, blanc);
         if (surf_temps) {
             SDL_Texture *tex_temps = SDL_CreateTextureFromSurface(renderer, surf_temps);
@@ -1705,14 +1089,8 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
             SDL_RenderCopy(renderer, tex_temps, NULL, &rect_temps);
             SDL_DestroyTexture(tex_temps);
         }
-<<<<<<< HEAD
 
         if (victoire) {
-=======
-        
-        if (victoire) {
-            // Question de sauvegarde
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
             const char *question = "Sauvegarder le design ?";
             SDL_Surface *surf_q = TTF_RenderText_Solid(font_small, question, blanc);
             if (surf_q) {
@@ -1722,7 +1100,6 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
                 SDL_RenderCopy(renderer, tex_q, NULL, &rect_q);
                 SDL_DestroyTexture(tex_q);
             }
-<<<<<<< HEAD
 
             SDL_RenderCopy(renderer, btn_oui.texture, NULL, &btn_oui.rect);
             SDL_RenderCopy(renderer, btn_oui.texte, NULL, &btn_oui.rect_texte);
@@ -1730,17 +1107,6 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
             SDL_RenderCopy(renderer, btn_non.texture, NULL, &btn_non.rect);
             SDL_RenderCopy(renderer, btn_non.texte, NULL, &btn_non.rect_texte);
         } else {
-=======
-            
-            // Boutons
-            SDL_RenderCopy(renderer, btn_oui.texture, NULL, &btn_oui.rect);
-            SDL_RenderCopy(renderer, btn_oui.texte, NULL, &btn_oui.rect_texte);
-            
-            SDL_RenderCopy(renderer, btn_non.texture, NULL, &btn_non.rect);
-            SDL_RenderCopy(renderer, btn_non.texte, NULL, &btn_non.rect_texte);
-        } else {
-            // Message pour fermer
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
             const char *info = "Cliquez pour continuer...";
             SDL_Surface *surf_info = TTF_RenderText_Solid(font_small, info, blanc);
             if (surf_info) {
@@ -1755,12 +1121,7 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
-<<<<<<< HEAD
 
-=======
-    
-    // Libérer les ressources
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     if (has_buttons) {
         SDL_DestroyTexture(btn_oui.texture);
         SDL_DestroyTexture(btn_oui.texte);
@@ -1769,11 +1130,7 @@ int afficherEcranFin(SDL_Renderer *renderer, SDL_Window *window, const char *mes
     }
     TTF_CloseFont(font);
     TTF_CloseFont(font_small);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     return sauvegarde_acceptee;
 }
 
@@ -1789,16 +1146,9 @@ int grillesIdentiques(Grille *grille_solution, Grille *grille_jeu) {
         for (int x = 0; x < grille_solution->largeur; ++x) {
             int sol_case = grille_solution->cases[y][x];
             int jeu_case = grille_jeu->cases[y][x];
-<<<<<<< HEAD
 
             int jeu_effectif = (jeu_case == ETAT_MARQUE) ? ETAT_VIDE : jeu_case;
 
-=======
-            
-            // Traiter ETAT_MARQUE (2) comme ETAT_VIDE (0) pour la comparaison
-            int jeu_effectif = (jeu_case == ETAT_MARQUE) ? ETAT_VIDE : jeu_case;
-            
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
             if (sol_case != jeu_effectif) {
                 return 0;
             }
@@ -1878,18 +1228,10 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
     SDL_FreeSurface(surf_titre);
     int titre_w, titre_h;
     SDL_QueryTexture(texture_titre, NULL, NULL, &titre_w, &titre_h);
-<<<<<<< HEAD
     SDL_Rect rect_titre = { (DEFAULT_WINDOW_W - titre_w) / 2, 50, titre_w, titre_h };
 
     Bouton btn_jouer   = creer_bouton("textures/btn_jouer.jpg", renderer, "Jouer", font, 100, 200);
 
-=======
-    SDL_Rect rect_titre = { (DEFAULT_WINDOW_W - titre_w) / 2, 50, titre_w, titre_h }; 
-
-    Bouton btn_jouer   = creer_bouton("textures/btn_jouer.jpg", renderer, "Jouer", font, 100, 200);
-    
-    // Bouton Reprendre (créé dynamiquement selon si une sauvegarde existe)
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     Bouton btn_reprendre;
     int sauvegarde_presente = partieExiste();
     if (sauvegarde_presente) {
@@ -1897,11 +1239,7 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
     } else {
         btn_reprendre = creer_bouton("textures/btn_jouer.jpg", renderer, "Reprendre la partie", font, 100, 270);
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     Bouton btn_param   = creer_bouton("textures/param.jpg", renderer, "Options", font, 100, 340);
     Bouton btn_quitter = creer_bouton("textures/quit.jpg", renderer, "Quitter", font, 100, 410);
 
@@ -1909,17 +1247,9 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
     int running = 1;
 
     while (running) {
-<<<<<<< HEAD
         int nouvelle_sauvegarde = partieExiste();
         if (nouvelle_sauvegarde != sauvegarde_presente) {
             sauvegarde_presente = nouvelle_sauvegarde;
-=======
-        // Vérifier si une sauvegarde existe (peut changer pendant l'exécution)
-        int nouvelle_sauvegarde = partieExiste();
-        if (nouvelle_sauvegarde != sauvegarde_presente) {
-            sauvegarde_presente = nouvelle_sauvegarde;
-            // Recréer le bouton avec la bonne couleur
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
             SDL_DestroyTexture(btn_reprendre.texture);
             SDL_DestroyTexture(btn_reprendre.texte);
             if (sauvegarde_presente) {
@@ -1928,11 +1258,7 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
                 btn_reprendre = creer_bouton("textures/btn_jouer.jpg", renderer, "Reprendre la partie", font, 100, 270);
             }
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 running = 0;
@@ -1942,20 +1268,11 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
                     Menu_mode(renderer, window, grille_solution_ptr, grille_jeu_ptr, largeurGrillePixels, hauteurGrillePixels);
                 }
                 else if (Clique(mx, my, btn_reprendre) && sauvegarde_presente) {
-<<<<<<< HEAD
                     Uint32 temps_sauvegarde = 0;
                     if (chargerPartie(grille_solution_ptr, grille_jeu_ptr, &temps_sauvegarde) == 0) {
                         printf("Partie chargée avec succès!\n");
                         Menu_jouer(renderer, window, *grille_solution_ptr, *grille_jeu_ptr,
                                    largeurGrillePixels, hauteurGrillePixels, temps_sauvegarde, MODE_NORMAL);
-=======
-                    // Charger la partie sauvegardée
-                    Uint32 temps_sauvegarde = 0;
-                    if (chargerPartie(grille_solution_ptr, grille_jeu_ptr, &temps_sauvegarde) == 0) {
-                        printf("Partie chargée avec succès!\n");
-                        Menu_jouer(renderer, window, *grille_solution_ptr, *grille_jeu_ptr, 
-                                   largeurGrillePixels, hauteurGrillePixels, temps_sauvegarde);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                     } else {
                         printf("Erreur lors du chargement de la partie.\n");
                     }
@@ -1976,10 +1293,6 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
         SDL_RenderCopy(renderer, btn_jouer.texture, NULL, &btn_jouer.rect);
         SDL_RenderCopy(renderer, btn_jouer.texte, NULL, &btn_jouer.rect_texte);
 
-<<<<<<< HEAD
-=======
-        // Bouton Reprendre
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_RenderCopy(renderer, btn_reprendre.texture, NULL, &btn_reprendre.rect);
         SDL_RenderCopy(renderer, btn_reprendre.texte, NULL, &btn_reprendre.rect_texte);
 
@@ -2011,7 +1324,6 @@ void Menu_principal(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_
 }
 
 
-<<<<<<< HEAD
 int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels, Uint32 temps_initial, int mode)
 {
     (void)largeurGrillePixels;
@@ -2022,25 +1334,12 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
         return 0;
     }
 
-=======
-int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_solution, Grille *grille_jeu, int largeurGrillePixels, int hauteurGrillePixels, Uint32 temps_initial)
-{
-    (void)largeurGrillePixels;
-    (void)hauteurGrillePixels;
-    
-    if (!grille_solution || !grille_jeu) {
-        printf("Erreur: Tentative de jouer sans grille chargée.\n");
-        return 0;
-    }
-
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
     TTF_Font *font = TTF_OpenFont("fonts/sans.ttf", 24);
     TTF_Font *font_small = TTF_OpenFont("fonts/sans.ttf", 18);
     if (!font || !font_small) {
         printf("Erreur: Impossible de charger la police (Menu_jouer).\n");
         if (font) TTF_CloseFont(font);
         if (font_small) TTF_CloseFont(font_small);
-<<<<<<< HEAD
         return 0;
     }
 
@@ -2054,32 +1353,10 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
     Bouton boutonFinis = creer_bouton("textures/btn_jouer.jpg", renderer, "Verifier", font, win_w - 170, 10);
     Bouton boutonIndice = creer_bouton("textures/btn_jouer.jpg", renderer, "Indice", font, win_w - 170 - BTN_W - 10, 10);
     Bouton boutonSauvegarder = creer_bouton("textures/btn_jouer.jpg", renderer, "Sauver & Quitter", font, win_w - 225, 60);
-=======
-        return 0; 
-    }
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
-    // Initialiser le contexte de rendu
-    RenderContext ctx;
-    int win_w, win_h;
-    SDL_GetWindowSize(window, &win_w, &win_h);
-    calculerRenderContext(&ctx, win_w, win_h, grille_solution);
-    
-    // Chronomètre - démarrage (avec temps initial pour reprendre une partie)
-    Uint32 temps_debut = SDL_GetTicks() - temps_initial;
-    
-    // Créer les boutons (positions initiales)
-    Bouton boutonFinis = creer_bouton("textures/btn_jouer.jpg", renderer, "Verifier", font, win_w - 170, 10);
-    Bouton boutonIndice = creer_bouton("textures/btn_jouer.jpg", renderer, "Indice", font, win_w - 170 - BTN_W - 10, 10);
-    Bouton boutonSauvegarder = creer_bouton("textures/btn_jouer.jpg", renderer, "Sauver & Quitter", font, win_w - 225, 60);
-    
     SDL_Event e;
     int enCours = 1;
-<<<<<<< HEAD
     int resultat = 0;
-=======
-    int resultat = 0;  // 0 = quitter normal, 1 = sauvegarde et quitter, 2 = victoire
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
     while(enCours) {
         while(SDL_PollEvent(&e)) {
@@ -2087,7 +1364,6 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
                 enCours = 0;
                 resultat = 0;
             }
-<<<<<<< HEAD
             else if(e.type == SDL_WINDOWEVENT) {
                 if(e.window.event == SDL_WINDOWEVENT_RESIZED ||
                    e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
@@ -2100,30 +1376,12 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
                     boutonIndice.rect.x = win_w - 170 - BTN_W - 10;
                     boutonIndice.rect_texte.x = boutonIndice.rect.x + (boutonIndice.rect.w - boutonIndice.rect_texte.w) / 2;
 
-=======
-            // Gestion du redimensionnement
-            else if(e.type == SDL_WINDOWEVENT) {
-                if(e.window.event == SDL_WINDOWEVENT_RESIZED || 
-                   e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    // Recalculer le contexte
-                    SDL_GetWindowSize(window, &win_w, &win_h);
-                    calculerRenderContext(&ctx, win_w, win_h, grille_solution);
-                    
-                    // Repositionner les boutons
-                    boutonFinis.rect.x = win_w - 170;
-                    boutonFinis.rect_texte.x = boutonFinis.rect.x + (boutonFinis.rect.w - boutonFinis.rect_texte.w) / 2;
-                    
-                    boutonIndice.rect.x = win_w - 170 - BTN_W - 10;
-                    boutonIndice.rect_texte.x = boutonIndice.rect.x + (boutonIndice.rect.w - boutonIndice.rect_texte.w) / 2;
-                    
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                     boutonSauvegarder.rect.x = win_w - 225;
                     boutonSauvegarder.rect_texte.x = boutonSauvegarder.rect.x + (boutonSauvegarder.rect.w - boutonSauvegarder.rect_texte.w) / 2;
                 }
             }
             else if(e.type == SDL_MOUSEBUTTONDOWN) {
                 int mx = e.button.x, my = e.button.y;
-<<<<<<< HEAD
 
                 if (e.button.button == SDL_BUTTON_LEFT) {
                     if(Clique(mx, my, boutonFinis)) {
@@ -2135,28 +1393,11 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
                             SDL_RenderClear(renderer);
                             dessinerGrille(renderer, grille_jeu, grille_solution, &ctx, mode);
 
-=======
-                
-                if (e.button.button == SDL_BUTTON_LEFT) {
-                    if(Clique(mx, my, boutonFinis)) {
-                        // Calculer le temps total
-                        Uint32 temps_total = SDL_GetTicks() - temps_debut;
-                        
-                        int ok = grillesIdentiques(grille_solution, grille_jeu);
-                        if(ok) {
-                            // D'abord redessiner la grille complète SANS popup pour la capture
-                            SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-                            SDL_RenderClear(renderer);
-                            dessinerGrille(renderer, grille_jeu, grille_solution, &ctx);
-                            
-                            // Dessiner les boutons pour une capture complète
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                             SDL_RenderCopy(renderer, boutonFinis.texture, NULL, &boutonFinis.rect);
                             SDL_RenderCopy(renderer, boutonFinis.texte, NULL, &boutonFinis.rect_texte);
                             SDL_RenderCopy(renderer, boutonIndice.texture, NULL, &boutonIndice.rect);
                             SDL_RenderCopy(renderer, boutonIndice.texte, NULL, &boutonIndice.rect_texte);
                             dessinerChronometre(renderer, temps_total, win_w - 170, 60, font);
-<<<<<<< HEAD
 
                             SDL_RenderPresent(renderer);
 
@@ -2168,30 +1409,12 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
 
                             int garder_capture = afficherEcranFin(renderer, window, "Tout bon !", 1, temps_total);
 
-=======
-                            
-                            SDL_RenderPresent(renderer);
-                            
-                            // Prendre la capture AVANT d'afficher la popup
-                            char nom_capture[256];
-                            Uint32 timestamp = SDL_GetTicks();
-                            snprintf(nom_capture, sizeof(nom_capture), "picross_design_%u.png", timestamp);
-                            
-                            // Sauvegarder temporairement
-                            sauvegarderCapture(renderer, window, nom_capture);
-                            
-                            // Afficher l'écran de fin avec option de sauvegarde
-                            int garder_capture = afficherEcranFin(renderer, window, "Tout bon !", 1, temps_total);
-                            
-                            // Si l'utilisateur ne veut pas garder la capture, la supprimer
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                             if (!garder_capture) {
                                 char chemin_complet[512];
                                 snprintf(chemin_complet, sizeof(chemin_complet), "%s/%s", DOSSIER_CAPTURES, nom_capture);
                                 remove(chemin_complet);
                                 printf("Capture supprimée: %s\n", chemin_complet);
                             }
-<<<<<<< HEAD
 
                             supprimerSauvegarde();
 
@@ -2201,32 +1424,15 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
                             afficherEcranFin(renderer, window, "Flop !", 0, temps_total);
                         }
                     }
-=======
-                            
-                            // Supprimer la sauvegarde de partie car on a gagné
-                            supprimerSauvegarde();
-                            
-                            enCours = 0;
-                            resultat = 2;  // Victoire
-                        } else {
-                            afficherEcranFin(renderer, window, "Flop !", 0, temps_total);
-                        }
-                    } 
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                     else if (Clique(mx, my, boutonIndice)) {
                         indice(grille_solution, grille_jeu);
                     }
                     else if (Clique(mx, my, boutonSauvegarder)) {
-<<<<<<< HEAD
-=======
-                        // Sauvegarder la partie et quitter
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
                         Uint32 temps_ecoule = SDL_GetTicks() - temps_debut;
                         if (sauvegarderPartie(grille_solution, grille_jeu, temps_ecoule) == 0) {
                             printf("Partie sauvegardée! Temps: %u ms\n", temps_ecoule);
                         }
                         enCours = 0;
-<<<<<<< HEAD
                         resultat = 1;
                     }
                     else {
@@ -2235,42 +1441,28 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
                 }
                 else if (e.button.button == SDL_BUTTON_RIGHT) {
                     gererClicDroit(grille_jeu, mx, my, &ctx, mode);
-=======
-                        resultat = 1;  // Sauvegarde et quitter
-                    }
-                    else {
-                        gererClic(grille_jeu, mx, my, &ctx); 
-                    }
-                }
-                else if (e.button.button == SDL_BUTTON_RIGHT) {
-                    gererClicDroit(grille_jeu, mx, my, &ctx); 
                 }
             }
         }
 
-        // Calcul du temps écoulé
         Uint32 temps_ecoule = SDL_GetTicks() - temps_debut;
 
         SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
         SDL_RenderClear(renderer);
-        
-        // Dessiner la grille avec le contexte dynamique
-        dessinerGrille(renderer, grille_jeu, grille_solution, &ctx);
 
-        // Dessiner les boutons
+        dessinerGrille(renderer, grille_jeu, grille_solution, &ctx, mode);
+
         SDL_RenderCopy(renderer, boutonFinis.texture, NULL, &boutonFinis.rect);
         SDL_RenderCopy(renderer, boutonFinis.texte, NULL, &boutonFinis.rect_texte);
 
         SDL_RenderCopy(renderer, boutonIndice.texture, NULL, &boutonIndice.rect);
         SDL_RenderCopy(renderer, boutonIndice.texte, NULL, &boutonIndice.rect_texte);
-        
-        // Bouton Sauvegarder et Quitter
+
         SDL_RenderCopy(renderer, boutonSauvegarder.texture, NULL, &boutonSauvegarder.rect);
         SDL_RenderCopy(renderer, boutonSauvegarder.texte, NULL, &boutonSauvegarder.rect_texte);
-        
-        // Dessiner le chronomètre sous le bouton sauvegarder
+
         dessinerChronometre(renderer, temps_ecoule, win_w - 170, 100, font);
-    
+
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
@@ -2283,7 +1475,7 @@ int Menu_jouer(SDL_Renderer *renderer, SDL_Window *window, Grille *grille_soluti
     SDL_DestroyTexture(boutonSauvegarder.texte);
     TTF_CloseFont(font);
     TTF_CloseFont(font_small);
-    
+
     return resultat;
 }
 
@@ -2291,7 +1483,7 @@ void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window)
 {
     if (!renderer || !window) return;
 
-    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 24); 
+    TTF_Font *font = TTF_OpenFont("fonts/font.otf", 24);
     if (!font) return;
 
     SDL_Color blanc = {255, 255, 255, 255};
@@ -2305,218 +1497,12 @@ void Menu_parametres(SDL_Renderer *renderer, SDL_Window *window)
     const int BAR_X = 270;
     const int BAR_Y = 160;
     const int CURSOR_SIZE = 15;
-    
-    int volume = Mix_VolumeMusic(-1);
-    char txt_volume[32];
-
-    SDL_Texture *tex_volume = NULL;
-    SDL_Rect rect_volume = {50, 150, 200, 30};
-    
-    bool dragging_volume = false; 
-    SDL_Event event;
-    int running = 1;
-
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) running = 0;
-            
-            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                int mx = event.button.x, my = event.button.y;
-                
-                if (mx >= BAR_X && mx <= BAR_X + BAR_W && my >= BAR_Y - CURSOR_SIZE && my <= BAR_Y + BAR_H + CURSOR_SIZE) {
-                    dragging_volume = true;
-                }
-                
-                if (Clique(mx, my, btn_retour)) {
-                    running = 0;
-                }
-            }
-            else if (event.type == SDL_MOUSEBUTTONUP && event.button.button == SDL_BUTTON_LEFT)
-            {
-                dragging_volume = false;
-            }
-            
-            else if (event.type == SDL_MOUSEMOTION)
-            {
-                if (dragging_volume) {
-                    int mx = event.motion.x;
-                    int new_cursor_x = mx;
-                    if (new_cursor_x < BAR_X) new_cursor_x = BAR_X;
-                    if (new_cursor_x > BAR_X + BAR_W) new_cursor_x = BAR_X + BAR_W;
-
-                    float ratio = (float)(new_cursor_x - BAR_X) / BAR_W;
-                    volume = (int)(ratio * MIX_MAX_VOLUME); 
-                    
-                    Mix_VolumeMusic(volume);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
-                }
-            }
-        }
-
-        Uint32 temps_ecoule = SDL_GetTicks() - temps_debut;
-
-        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-        SDL_RenderClear(renderer);
-
-<<<<<<< HEAD
-        dessinerGrille(renderer, grille_jeu, grille_solution, &ctx, mode);
-
-        SDL_RenderCopy(renderer, boutonFinis.texture, NULL, &boutonFinis.rect);
-        SDL_RenderCopy(renderer, boutonFinis.texte, NULL, &boutonFinis.rect_texte);
-=======
-        SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
-        
-        if(tex_volume) SDL_DestroyTexture(tex_volume);
-        snprintf(txt_volume, sizeof(txt_volume), "Volume : (%d)", volume);
-        SDL_Surface *surf_vol = TTF_RenderText_Solid(font, txt_volume, blanc);
-        tex_volume = SDL_CreateTextureFromSurface(renderer, surf_vol);
-        SDL_FreeSurface(surf_vol);
-        SDL_RenderCopy(renderer, tex_volume, NULL, &rect_volume);
-        
-        SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-        SDL_Rect bar_rect = {BAR_X, BAR_Y, BAR_W, BAR_H};
-        SDL_RenderFillRect(renderer, &bar_rect);
-
-        int cursor_x = BAR_X + (int)((float)volume / MIX_MAX_VOLUME * BAR_W);
-
-        SDL_Rect cursor_rect = {cursor_x - 5, BAR_Y - 5, 10, BAR_H + 10};
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); 
-        SDL_RenderFillRect(renderer, &cursor_rect);
-
-        SDL_RenderCopy(renderer, btn_retour.texture, NULL, &btn_retour.rect);
-        SDL_RenderCopy(renderer, btn_retour.texte, NULL, &btn_retour.rect_texte);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
-
-        SDL_RenderCopy(renderer, boutonIndice.texture, NULL, &boutonIndice.rect);
-        SDL_RenderCopy(renderer, boutonIndice.texte, NULL, &boutonIndice.rect_texte);
-
-        SDL_RenderCopy(renderer, boutonSauvegarder.texture, NULL, &boutonSauvegarder.rect);
-        SDL_RenderCopy(renderer, boutonSauvegarder.texte, NULL, &boutonSauvegarder.rect_texte);
-
-        dessinerChronometre(renderer, temps_ecoule, win_w - 170, 100, font);
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(16);
-    }
-<<<<<<< HEAD
-
-    SDL_DestroyTexture(boutonFinis.texture);
-    SDL_DestroyTexture(boutonFinis.texte);
-    SDL_DestroyTexture(boutonIndice.texture);
-    SDL_DestroyTexture(boutonIndice.texte);
-    SDL_DestroyTexture(boutonSauvegarder.texture);
-    SDL_DestroyTexture(boutonSauvegarder.texte);
-=======
-    SDL_DestroyTexture(texture_fond);
-    SDL_DestroyTexture(btn_retour.texture);
-    SDL_DestroyTexture(btn_retour.texte);
-    if(tex_volume) SDL_DestroyTexture(tex_volume);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
-    TTF_CloseFont(font);
-    TTF_CloseFont(font_small);
-
-    return resultat;
-}
-
-Grille *genererGrilleAleatoire(int taille) {
-
-    
-    
-    Grille *g = malloc(sizeof(Grille));
-    if (!g) return NULL;
-
-    g->hauteur = taille;
-    g->largeur = taille;
-    g->taille = taille * taille;
-    g->nombre_cases_noires = 0;
-    g->cases = allouerCases(taille, taille);
-    if (!g->cases) {
-        free(g);
-        return NULL;
-    }
-
-    for (int y = 0; y < taille; ++y) {
-        for (int x = 0; x < taille; ++x) {
-            if ((rand() % 2) == 0)
-            {
-                g->cases[y][x] = ETAT_NOIR; 
-                g->nombre_cases_noires++;
-            } 
-            else
-            {
-                g->cases[y][x] = ETAT_VIDE; 
-            }
-        }
-    }
-    g->indices_lignes = NULL;
-    g->indices_colonnes = NULL;
-    g->nb_indices_lignes = NULL;
-    g->nb_indices_colonnes = NULL;
-
-    return g;
-}
-
-void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels)
-{
-
-    TTF_Font *font_titre = TTF_OpenFont("fonts/font.otf", 36); 
-    TTF_Font *font_btn = TTF_OpenFont("fonts/font.otf", 24);
-    
-    if (!font_titre || !font_btn) {
-        if (font_titre) TTF_CloseFont(font_titre);
-        if (font_btn) TTF_CloseFont(font_btn);
-        return;
-    }
-
-    SDL_Color blanc = {255, 255, 255, 255};
-
-<<<<<<< HEAD
-    SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
-    if (!texture_fond) return;
-    Bouton btn_retour = creer_bouton("textures/btn_jouer.jpg", renderer, "Retour", font, 50, 50);
-
-    const int BAR_W = 200;
-    const int BAR_H = 10;
-    const int BAR_X = 270;
-    const int BAR_Y = 160;
-    const int CURSOR_SIZE = 15;
 
     int volume = Mix_VolumeMusic(-1);
     char txt_volume[32];
 
     SDL_Texture *tex_volume = NULL;
     SDL_Rect rect_volume = {50, 150, 200, 30};
-=======
-    SDL_Surface *surf_titre = TTF_RenderText_Solid(font_titre, "Choix du mode de jeu", blanc);
-    if (!surf_titre) {
-        TTF_CloseFont(font_titre);
-        TTF_CloseFont(font_btn);
-        return;
-    }
-    
-    SDL_Texture *texture_titre = SDL_CreateTextureFromSurface(renderer, surf_titre);
-    SDL_FreeSurface(surf_titre);
-    
-    int titre_w, titre_h;
-    SDL_QueryTexture(texture_titre, NULL, NULL, &titre_w, &titre_h);
-    
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    SDL_Rect rect_titre = { (w - titre_w) / 2, 50, titre_w, titre_h };
-
-    SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
-    if (!texture_fond) {
-        SDL_DestroyTexture(texture_titre);
-        TTF_CloseFont(font_titre);
-        TTF_CloseFont(font_btn);
-        return;
-    }
-
-    Bouton btn_predefini = creer_bouton("textures/btn_jouer.jpg", renderer, "Predefini", font_btn, 100, 200);
-    Bouton btn_hexagones = creer_bouton("textures/btn_jouer.jpg", renderer, "Hexagones", font_btn, 100, 270);
-    Bouton btn_aleatoire = creer_bouton("textures/btn_jouer.jpg", renderer, "Aleatoire", font_btn, 100, 340);
-    Bouton btn_retour   = creer_bouton("textures/quit.jpg", renderer, "Retour", font_btn, 100, 410);
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
 
     bool dragging_volume = false;
     SDL_Event event;
@@ -2681,7 +1667,6 @@ void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solut
             if (event.type == SDL_QUIT) running = 0;
             else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
                 int mx = event.button.x, my = event.button.y;
-<<<<<<< HEAD
 
                 if (Clique(mx, my, btn_predefini)) {
                     Menu_selection_niveau_predefini(renderer, window, grille_solution_ptr, grille_jeu_ptr, largeurGrillePixels, hauteurGrillePixels);
@@ -2722,75 +1707,24 @@ void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solut
             }
         }
 
-=======
-                
-                if (Clique(mx, my, btn_predefini)) {
-                  
-                    Menu_selection_niveau_predefini(renderer, window, grille_solution_ptr, grille_jeu_ptr, largeurGrillePixels, hauteurGrillePixels);
-                    running = 0; 
-                } 
-                else if (Clique(mx, my, btn_hexagones)) {
-                 
-                    printf("Mode Hexagones selectionne (Non implémente).\n");
-                   
-                } 
-                else if (Clique(mx, my, btn_aleatoire)) {
-                    printf("Mode Aleatoire selectionne.\n");
-                    if (*grille_jeu_ptr) libererGrille(*grille_jeu_ptr);
-                    if (*grille_solution_ptr) libererGrille(*grille_solution_ptr);
-                    *grille_solution_ptr = genererGrilleAleatoire(10);
-                    
-                    if (!*grille_solution_ptr) {
-                        printf("Erreur: Échec de la génération aléatoire.\n");
-                        running = 0; 
-                        continue;
-                    } 
-                    *grille_jeu_ptr = chargerGrille(*grille_solution_ptr);
-                    calculerEtStockerTousIndices(*grille_solution_ptr);
-                    Menu_jouer(renderer, window, *grille_solution_ptr, *grille_jeu_ptr, largeurGrillePixels, hauteurGrillePixels, 0);
-                    
-                } 
-                else if (Clique(mx, my, btn_retour)) {
-                    running = 0; 
-                }
-            }
-        }
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
         SDL_RenderClear(renderer);
-        
-        if (texture_fond) {
-             SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
-        }
 
-<<<<<<< HEAD
         if (texture_fond) {
              SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
         }
 
         SDL_RenderCopy(renderer, texture_titre, NULL, &rect_titre);
 
-=======
-        SDL_RenderCopy(renderer, texture_titre, NULL, &rect_titre);
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_RenderCopy(renderer, btn_predefini.texture, NULL, &btn_predefini.rect);
         SDL_RenderCopy(renderer, btn_predefini.texte, NULL, &btn_predefini.rect_texte);
 
         SDL_RenderCopy(renderer, btn_hexagones.texture, NULL, &btn_hexagones.rect);
         SDL_RenderCopy(renderer, btn_hexagones.texte, NULL, &btn_hexagones.rect_texte);
-<<<<<<< HEAD
 
         SDL_RenderCopy(renderer, btn_aleatoire.texture, NULL, &btn_aleatoire.rect);
         SDL_RenderCopy(renderer, btn_aleatoire.texte, NULL, &btn_aleatoire.rect_texte);
 
-=======
-        
-        SDL_RenderCopy(renderer, btn_aleatoire.texture, NULL, &btn_aleatoire.rect);
-        SDL_RenderCopy(renderer, btn_aleatoire.texte, NULL, &btn_aleatoire.rect_texte);
-        
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
         SDL_RenderCopy(renderer, btn_retour.texture, NULL, &btn_retour.rect);
         SDL_RenderCopy(renderer, btn_retour.texte, NULL, &btn_retour.rect_texte);
 
@@ -2810,7 +1744,6 @@ void Menu_mode(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solut
     SDL_DestroyTexture(btn_retour.texte);
     TTF_CloseFont(font_titre);
     TTF_CloseFont(font_btn);
-<<<<<<< HEAD
 }
 
 
@@ -2966,173 +1899,6 @@ void indice(Grille *grille_solution, Grille *grille_jeu)
     for (int y = 0; y < grille_solution->hauteur; ++y) {
         for (int x = 0; x < grille_solution->largeur; ++x) {
             if (grille_solution->cases[y][x] == ETAT_NOIR && grille_jeu->cases[y][x] != ETAT_NOIR)
-            {
-
-                grille_jeu->cases[y][x] = ETAT_NOIR;
-                indices_donnes++;
-                if (indices_donnes >= NOMBRE_INDICES) {
-                    return;
-                }
-            }
-        }
-    }
-=======
->>>>>>> 32ba1ad34774c903e985d1309ce70d1d7811e87d
-}
-
-
-void Menu_selection_niveau_predefini(SDL_Renderer *renderer, SDL_Window *window, Grille **grille_solution_ptr, Grille **grille_jeu_ptr, int largeurGrillePixels, int hauteurGrillePixels)
-{
- 
-    TTF_Font *font_titre = TTF_OpenFont("fonts/font.otf", 36); 
-    TTF_Font *font_btn = TTF_OpenFont("fonts/sans.ttf", 24);
-    
-    if (!font_titre || !font_btn) {
-        if (font_titre) TTF_CloseFont(font_titre);
-        if (font_btn) TTF_CloseFont(font_btn);
-        return;
-    }
-    SDL_Color blanc = {255, 255, 255, 255};
-    SDL_Surface *surf_titre = TTF_RenderText_Solid(font_titre, "Selectionnez le Niveau", blanc);
-    if (!surf_titre) {
-        TTF_CloseFont(font_titre);
-        TTF_CloseFont(font_btn);
-        return;
-    }
-    
-    SDL_Texture *texture_titre = SDL_CreateTextureFromSurface(renderer, surf_titre);
-    SDL_FreeSurface(surf_titre);
-    
-    int titre_w, titre_h;
-    SDL_QueryTexture(texture_titre, NULL, NULL, &titre_w, &titre_h);
-    
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    SDL_Rect rect_titre = { (w - titre_w) / 2, 50, titre_w, titre_h };
-
-
-    SDL_Texture *texture_fond = texture_init("fond.jpg", renderer);
-    if (!texture_fond) {
-        SDL_DestroyTexture(texture_titre);
-        TTF_CloseFont(font_titre);
-        TTF_CloseFont(font_btn);
-        return;
-    }
-    
-    Bouton btn_niv1 = creer_bouton("textures/btn_jouer.jpg", renderer, "Niveau 1", font_btn, 100, 200);
-    Bouton btn_niv2 = creer_bouton("textures/btn_jouer.jpg", renderer, "Niveau 2", font_btn, 100, 270);
-    Bouton btn_niv3 = creer_bouton("textures/btn_jouer.jpg", renderer, "Niveau 3", font_btn, 100, 340);
-    Bouton btn_niv4 = creer_bouton("textures/btn_jouer.jpg", renderer, "Niveau 4", font_btn, 100, 410);
-    Bouton btn_retour   = creer_bouton("textures/quit.jpg", renderer, "Retour", font_btn, 100, 480);
-
-    SDL_Event event;
-    int running = 1;
-
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) running = 0;
-            else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
-                int mx = event.button.x, my = event.button.y;
-                
-                char chemin_fichier[100];
-                int niveau_selectionne = 0;
-
-                if (Clique(mx, my, btn_niv1)) niveau_selectionne = 1;
-                else if (Clique(mx, my, btn_niv2)) niveau_selectionne = 2;
-                else if (Clique(mx, my, btn_niv3)) niveau_selectionne = 3;
-                else if (Clique(mx, my, btn_niv4)) niveau_selectionne = 4;
-                else if (Clique(mx, my, btn_retour)) {
-                    running = 0; 
-                    continue;
-                }
-
-                if (niveau_selectionne > 0) {
-                    snprintf(chemin_fichier, sizeof(chemin_fichier), "predefinis/predefini_niv%d.txt", niveau_selectionne);
-                    
-                    printf("Tentative de chargement du niveau : %s\n", chemin_fichier);
-    
-                    FILE *f = fopen(chemin_fichier, "r");
-                    
-                    if (f) {
-                        if (*grille_jeu_ptr) libererGrille(*grille_jeu_ptr);
-                        if (*grille_solution_ptr) libererGrille(*grille_solution_ptr);
-                        *grille_solution_ptr = chargerGrillesolution(f);
-                        fclose(f);
-                        
-                        if (!*grille_solution_ptr) {
-                            printf("Erreur: Échec du chargement de la nouvelle grille solution.\n");
-                            continue; 
-                        }
-                        *grille_jeu_ptr = chargerGrille(*grille_solution_ptr);
-                        
-                        if (!*grille_jeu_ptr){
-                            printf("Erreur: Échec de la création de la grille de jeu.\n");
-                            libererGrille(*grille_solution_ptr);
-                            *grille_solution_ptr = NULL;
-                            continue; 
-                        }
-                        calculerEtStockerTousIndices(*grille_solution_ptr);
-                        Menu_jouer(renderer, window, *grille_solution_ptr, *grille_jeu_ptr, largeurGrillePixels, hauteurGrillePixels, 0);
-                        
-                        running = 0;
-                        
-                    } else {
-                       printf("Erreur: Impossible d'ouvrir le fichier %s\n", chemin_fichier);
-                    }
-                }
-            }
-        }
-        
-        SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
-        SDL_RenderClear(renderer);
-        
-        if (texture_fond) {
-             SDL_RenderCopy(renderer, texture_fond, NULL, NULL);
-        }
-
-        SDL_RenderCopy(renderer, texture_titre, NULL, &rect_titre);
-        
-        SDL_RenderCopy(renderer, btn_niv1.texture, NULL, &btn_niv1.rect);
-        SDL_RenderCopy(renderer, btn_niv1.texte, NULL, &btn_niv1.rect_texte);
-        
-        SDL_RenderCopy(renderer, btn_niv2.texture, NULL, &btn_niv2.rect);
-        SDL_RenderCopy(renderer, btn_niv2.texte, NULL, &btn_niv2.rect_texte);
-        
-        SDL_RenderCopy(renderer, btn_niv3.texture, NULL, &btn_niv3.rect);
-        SDL_RenderCopy(renderer, btn_niv3.texte, NULL, &btn_niv3.rect_texte);
-
-         SDL_RenderCopy(renderer, btn_niv4.texture, NULL, &btn_niv4.rect);
-        SDL_RenderCopy(renderer, btn_niv4.texte, NULL, &btn_niv4.rect_texte);
-        
-        SDL_RenderCopy(renderer, btn_retour.texture, NULL, &btn_retour.rect);
-        SDL_RenderCopy(renderer, btn_retour.texte, NULL, &btn_retour.rect_texte);
-
-        SDL_RenderPresent(renderer);
-        SDL_Delay(16);
-    }
-
-    SDL_DestroyTexture(texture_titre);
-    SDL_DestroyTexture(texture_fond);
-    SDL_DestroyTexture(btn_niv1.texture);
-    SDL_DestroyTexture(btn_niv1.texte);
-    SDL_DestroyTexture(btn_niv2.texture);
-    SDL_DestroyTexture(btn_niv2.texte);
-    SDL_DestroyTexture(btn_niv3.texture);
-    SDL_DestroyTexture(btn_niv3.texte);
-    SDL_DestroyTexture(btn_niv4.texture);
-    SDL_DestroyTexture(btn_niv4.texte);
-    SDL_DestroyTexture(btn_retour.texture);
-    SDL_DestroyTexture(btn_retour.texte);
-    TTF_CloseFont(font_titre);
-    TTF_CloseFont(font_btn);
-}
-
-void indice(Grille *grille_solution, Grille *grille_jeu)
-{
-    int indices_donnes = 0;
-    for (int y = 0; y < grille_solution->hauteur; ++y) {
-        for (int x = 0; x < grille_solution->largeur; ++x) {
-            if (grille_solution->cases[y][x] == ETAT_NOIR && grille_jeu->cases[y][x] != ETAT_NOIR) 
             {
 
                 grille_jeu->cases[y][x] = ETAT_NOIR;

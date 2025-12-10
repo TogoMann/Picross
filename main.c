@@ -1,8 +1,12 @@
 #include "fonctions.h"
+#include <time.h>
 
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
+
+    // Initialiser le générateur aléatoire
+    srand((unsigned int)time(NULL));
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         printf("Erreur SDL_Init : %s\n", SDL_GetError());
@@ -33,7 +37,7 @@ int main(int argc, char *argv[]) {
         "Picross",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         largeurFenetre, hauteurFenetre,
-        0
+        SDL_WINDOW_RESIZABLE
     );
     if (!fenetre) {
         printf("Impossible de créer la fenêtre.\n");

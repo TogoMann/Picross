@@ -1,12 +1,21 @@
 #include "fonctions.h"
+
+
 static int **allouerCases(int hauteur, int largeur) {
     int **cases = malloc(hauteur * sizeof(int *));
-    if (!cases) return NULL;
+    if (!cases){
+        return NULL;
+    }
 
-    for (int i = 0; i < hauteur; ++i) {
+    for (int i = 0; i < hauteur; ++i)
+    {
         cases[i] = calloc(largeur, sizeof(int));
-        if (!cases[i]) {
-            for (int j = 0; j < i; ++j) {
+
+        if (!cases[i])
+        {
+            printf("Erreur d'allocation des cases\n");
+            for (int j = 0; j < i; ++j)
+            {
                 free(cases[j]);
             }
             free(cases);
@@ -17,21 +26,40 @@ static int **allouerCases(int hauteur, int largeur) {
 }
 
 Grille *chargerGrillesolution(FILE *fichier) {
-    if (!fichier) return NULL;
+
+    if (!fichier)
+    {
+        printf("Erreur fichier\n");
+        return NULL;
+    }
+
     char ligne[1024];
     int **cases = NULL;
     int hauteur = 0;
     int largeur = 0;
     int capacite = 0;
     int nb_noires = 0;
-    while (fgets(ligne, sizeof(ligne), fichier)) {
-        size_t len = strlen(ligne);
-        while (len > 0 && (ligne[len - 1] == '\n' || ligne[len - 1] == '\r')) ligne[--len] = '\0';
-        int count_bits = 0;
-        for (size_t i = 0; i < len; ++i) if (ligne[i] == '0' || ligne[i] == '1') count_bits++;
-        if (count_bits == 0) continue;
-        if (largeur == 0) largeur = count_bits;
-        else if (largeur != count_bits) {
+
+    while (fgets(ligne, sizeof(ligne), fichier))
+    {
+        size_t longueur = strlen(ligne);
+
+        while (longueur > 0 && (ligne[longueur - 1] == '\n' || ligne[longueur - 1] == '\r'))
+        {
+            ligne[--longueur] = '\0';
+        }
+        int count = 0;
+
+        for (size_t i = 0; i < longueur; ++i) 
+        {
+            if (ligne[i] == '0' || ligne[i] == '1')
+            {
+                count++;
+            }
+        }
+        if (count == 0) continue;
+        if (largeur == 0) largeur = count;
+        else if (largeur != count) {
             for (int r = 0; r < hauteur; ++r) free(cases[r]);
             free(cases);
             return NULL;
@@ -54,7 +82,7 @@ Grille *chargerGrillesolution(FILE *fichier) {
             return NULL;
         }
         int c = 0;
-        for (size_t i = 0; i < len && c < largeur; ++i) {
+        for (size_t i = 0; i < longueur && c < largeur; ++i) {
             if (ligne[i] == '0' || ligne[i] == '1') {
                 row[c] = (ligne[i] == '1') ? 1 : 0;
                 if (row[c] == 1) nb_noires++;
@@ -89,10 +117,21 @@ Grille *chargerGrillesolution(FILE *fichier) {
     return g;
 }
 
+
 Grille *chargerGrille(Grille *grille_solution) {
-    if (!grille_solution) return NULL;
+
+    if (!grille_solution)
+    {
+        printf("Erreur chargement grille \n")
+        return NULL;
+    }
     Grille *g = malloc(sizeof(Grille));
-    if (!g) return NULL;
+
+    if (!g)
+    {
+        printf("Erreur allocation grille \n")
+        return NULL;
+    }
     g->hauteur = grille_solution->hauteur;
     g->largeur = grille_solution->largeur;
     g->taille  = g->hauteur * g->largeur;
@@ -116,29 +155,51 @@ int *calculerIndices(int *ligne, int taille, int *nb_indices)
     int count = 0;
     int n = 0;
     for (int i = 0; i < taille; ++i) {
-        if (ligne[i] == 1) n++;
-        else if (n > 0) { indices[count++] = n; n = 0; }
+        if (ligne[i] == 1)
+        {
+            n++;
+        }
+        else if (n > 0)
+        {
+             indices[count++] = n;
+             n = 0;
+        }
     }
-    if (n > 0) indices[count++] = n;
+
+    if (n > 0)
+    {
+        indices[count++] = n;
+    }
+
     *nb_indices = count;
     return indices;
 }
 
-void libererIndices(Grille *grille) {
-    if (!grille) return;
+void libererIndices(Grille *grille)
+{
+    if (!grille){
+        printf("Erreur chargement grille pour libérer indices\n");
+        return;
+    }
     
-    if (grille->indices_lignes) {
-        for (int i = 0; i < grille->hauteur; ++i) {
+    if (grille->indices_lignes)
+    {
+        for (int i = 0; i < grille->hauteur; ++i)
+        {
             free(grille->indices_lignes[i]);
         }
         free(grille->indices_lignes);
     }
-    if (grille->indices_colonnes) {
-        for (int i = 0; i < grille->largeur; ++i) {
+
+    if (grille->indices_colonnes)
+    {
+        for (int i = 0; i < grille->largeur; ++i)
+        {
             free(grille->indices_colonnes[i]);
         }
         free(grille->indices_colonnes);
     }
+
     free(grille->nb_indices_lignes);
     free(grille->nb_indices_colonnes);
     
@@ -148,8 +209,13 @@ void libererIndices(Grille *grille) {
     grille->nb_indices_colonnes = NULL;
 }
 
-void calculerEtStockerTousIndices(Grille *grille_solution) {
-    if (!grille_solution) return;
+void calculerEtStockerTousIndices(Grille *grille_solution){
+
+    if (!grille_solution)
+    {
+        printf("Erreur de chargement grille pour stockage indice\n");
+        return;
+    }
     
     int H = grille_solution->hauteur;
     int L = grille_solution->largeur;
@@ -159,22 +225,25 @@ void calculerEtStockerTousIndices(Grille *grille_solution) {
     grille_solution->nb_indices_lignes = malloc(H * sizeof(int));
     grille_solution->nb_indices_colonnes = malloc(L * sizeof(int));
     
-    if (!grille_solution->indices_lignes || !grille_solution->indices_colonnes || 
-        !grille_solution->nb_indices_lignes || !grille_solution->nb_indices_colonnes) {
+    if (!grille_solution->indices_lignes || !grille_solution->indices_colonnes || !grille_solution->nb_indices_lignes || !grille_solution->nb_indices_colonnes) {
         libererIndices(grille_solution); 
         return; 
     }
 
-    for (int y = 0; y < H; ++y) {
+    for (int y = 0; y < H; ++y)
+    {
         int nb;
         int *indices = calculerIndices(grille_solution->cases[y], L, &nb);
         grille_solution->indices_lignes[y] = indices;
         grille_solution->nb_indices_lignes[y] = nb;
     }
 
-    for (int x = 0; x < L; ++x) {
+    for (int x = 0; x < L; ++x)
+    {
         int col[H];
-        for (int y = 0; y < H; ++y) {
+
+        for (int y = 0; y < H; ++y)
+        {
             col[y] = grille_solution->cases[y][x];
         }
         
@@ -185,12 +254,20 @@ void calculerEtStockerTousIndices(Grille *grille_solution) {
     }
 }
 
-void libererGrille(Grille *grille) {
-    if (!grille) return;
+void libererGrille(Grille *grille)
+{
+    if (!grille)
+    {
+        printf("Erreur chargement grille pour libérer grille\n");
+        return;
+    }
+
     libererIndices(grille); 
 
-    if (grille->cases) {
-        for (int i = 0; i < grille->hauteur; ++i) {
+    if (grille->cases)
+    {
+        for (int i = 0; i < grille->hauteur; ++i)
+        {
             free(grille->cases[i]);
         }
         free(grille->cases);
@@ -199,37 +276,51 @@ void libererGrille(Grille *grille) {
 }
 
 void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_solution) {
-    if (!grille_jeu || !grille_solution || !renderer) return;
 
-    if (grille_solution->hauteur == 0 || grille_solution->largeur == 0) return;
+    if (!grille_jeu || !grille_solution || !renderer)
+    {
+        printf("Erreur dessin grille (manque renderer, grille de jeu ou grille de solution\n)");
+        return;
+    }
+
+    if (grille_solution->hauteur == 0 || grille_solution->largeur == 0)
+    {
+        printf("La grille est vide\n");
+        return;
+    }
     
     SDL_Rect fondGauche = {0, OFFSET_Y, OFFSET_X, grille_solution->hauteur * TAILLE_CASE};
     SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
     SDL_RenderFillRect(renderer, &fondGauche);
 
     SDL_Rect fondHaut = {OFFSET_X, 0, grille_solution->largeur * TAILLE_CASE, OFFSET_Y};
-    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
+    SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255); 
     SDL_RenderFillRect(renderer, &fondHaut);
     
     SDL_Rect coinHautGauche = {0, 0, OFFSET_X, OFFSET_Y};
     SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255); 
     SDL_RenderFillRect(renderer, &coinHautGauche);
 
-    for (int y = 0; y < grille_jeu->hauteur; ++y) {
-        for (int x = 0; x < grille_jeu->largeur; ++x) {
+    for (int y = 0; y < grille_jeu->hauteur; ++y)
+    {
+        for (int x = 0; x < grille_jeu->largeur; ++x)
+        {
             SDL_Rect rect = {x * TAILLE_CASE + OFFSET_X + 1, y * TAILLE_CASE + OFFSET_Y + 1, TAILLE_CASE - 2, TAILLE_CASE - 2};
             
        
             if (grille_jeu->cases[y][x] == ETAT_NOIR)
             { 
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            } else { 
+            }
+            else
+            { 
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             }
             SDL_RenderFillRect(renderer, &rect);
             
         
-            if (grille_jeu->cases[y][x] == ETAT_MARQUE) { 
+            if (grille_jeu->cases[y][x] == ETAT_MARQUE)
+            { 
                 
              
                 int x1 = x * TAILLE_CASE + OFFSET_X;
@@ -245,25 +336,37 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_s
         }
     }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    for (int y = 0; y <= grille_solution->hauteur; ++y) {
+    for (int y = 0; y <= grille_solution->hauteur; ++y)
+    {
         SDL_RenderDrawLine(renderer, 0, OFFSET_Y + y * TAILLE_CASE, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y + y * TAILLE_CASE);
     }
-    for (int x = 0; x <= grille_solution->largeur; ++x) {
+
+    for (int x = 0; x <= grille_solution->largeur; ++x)
+    {
         SDL_RenderDrawLine(renderer, OFFSET_X + x * TAILLE_CASE, 0, OFFSET_X + x * TAILLE_CASE, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
     }
+
     SDL_RenderDrawLine(renderer, 0, OFFSET_Y, OFFSET_X + grille_solution->largeur * TAILLE_CASE, OFFSET_Y);
     SDL_RenderDrawLine(renderer, OFFSET_X, 0, OFFSET_X, OFFSET_Y + grille_solution->hauteur * TAILLE_CASE);
+
     TTF_Font *font = TTF_OpenFont("fonts/sans.ttf", 18);
-    if (!font) return; 
+
+    if (!font)
+    {
+        printf("Erreur de chargement de la police d'écriture\n");
+        return; 
+    }
 
     SDL_Color couleurTexte = {0, 0, 0, 255};
 
-    for (int y = 0; y < grille_solution->hauteur; ++y) {
+    for (int y = 0; y < grille_solution->hauteur; ++y)
+    {
         int nb;
         int *indices = calculerIndices(grille_solution->cases[y], grille_solution->largeur, &nb);
         int espace = 25;
 
-        for (int i = 0; i < nb; ++i) {
+        for (int i = 0; i < nb; ++i)
+        {
             char buf[12];
             snprintf(buf, sizeof(buf), "%d", indices[i]);
             SDL_Surface *surf = TTF_RenderText_Solid(font, buf, couleurTexte);
@@ -284,19 +387,24 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_s
         free(indices);
     }
 
-    for (int x = 0; x < grille_solution->largeur; ++x) {
+    for (int x = 0; x < grille_solution->largeur; ++x)
+    {
         int col[grille_solution->hauteur];
         for (int y = 0; y < grille_solution->hauteur; ++y) col[y] = grille_solution->cases[y][x];
         int nb;
         int *indices = calculerIndices(col, grille_solution->hauteur, &nb);
         int espace = 20;
 
-        for (int i = 0; i < nb; ++i) {
-            char buf[12];
-            snprintf(buf, sizeof(buf), "%d", indices[i]);
-            SDL_Surface *surf = TTF_RenderText_Solid(font, buf, couleurTexte);
-            if(surf) {
-                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+        for (int i = 0; i < nb; ++i)
+        {
+            char b[12];
+
+            snprintf(b, sizeof(b), "%d", indices[i]);
+
+            SDL_Surface *surf = TTF_RenderText_Solid(font, b, couleurTexte);
+            if(surf)
+            {
+                SDL_Texture *tx = SDL_CreateTextureFromSurface(renderer, surf);
                 int tw = surf->w;
                 int th = surf->h;
                 SDL_FreeSurface(surf);
@@ -305,8 +413,8 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_s
                 int pos_y = OFFSET_Y - ((nb - i) * espace) + (espace - th) / 2;
 
                 SDL_Rect r = { pos_x, pos_y, tw, th };
-                SDL_RenderCopy(renderer, tex, NULL, &r);
-                SDL_DestroyTexture(tex);
+                SDL_RenderCopy(renderer, tx, NULL, &r);
+                SDL_DestroyTexture(tx);
             }
         }
         free(indices);
@@ -315,51 +423,85 @@ void dessinerGrille(SDL_Renderer *renderer, Grille *grille_jeu, Grille *grille_s
     TTF_CloseFont(font);
 }
 
-void gererClicDroit(Grille *grille, int x, int y) {
-    if (!grille) return;
+void gererClicDroit(Grille *grille, int x, int y)
+{
+    if (!grille)
+    {
+        printf("Erreur chargement grille pour clic droit\n");
+        return;
+    }
 
     int col = (x - OFFSET_X) / TAILLE_CASE;
     int lig = (y - OFFSET_Y) / TAILLE_CASE;
 
-    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur) return;
-    if (grille->cases[lig][col] == ETAT_VIDE) {
+    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur)
+    {
+        printf("Erreur calcul ligne et colonne clic droit");
+        return;
+    }
+
+    if (grille->cases[lig][col] == ETAT_VIDE)
+    {
         grille->cases[lig][col] = ETAT_MARQUE;
-    } else if (grille->cases[lig][col] == ETAT_MARQUE) {
+
+    }
+    else if (grille->cases[lig][col] == ETAT_MARQUE)
+    {
         grille->cases[lig][col] = ETAT_VIDE;
     }
 }
 
-void gererClic(Grille *grille, int x, int y) {
-    if (!grille) return;
+void gererClic(Grille *grille, int x, int y)
+{
+    if (!grille)
+    {
+        return;
+    }
 
     int col = (x - OFFSET_X) / TAILLE_CASE;
     int lig = (y - OFFSET_Y) / TAILLE_CASE;
 
-    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur) return;
-    if (grille->cases[lig][col] == ETAT_MARQUE) {
-        grille->cases[lig][col] = ETAT_VIDE;
+    if (lig < 0 || lig >= grille->hauteur || col < 0 || col >= grille->largeur)
+    {
+        return;
     }
+
+    if (grille->cases[lig][col] == ETAT_MARQUE)
+    {
+        grille->cases[lig][col] = ETAT_VIDE; // changer pour etat noir maybe
+    }
+
     grille->cases[lig][col] = (grille->cases[lig][col] == ETAT_NOIR) ? ETAT_VIDE : ETAT_NOIR;
 }
 
 void Verification(Grille *grille_solution, Grille *grille_jeu) {
-    if (!grille_solution || !grille_jeu) return;
 
-    if (grille_solution->hauteur != grille_jeu->hauteur || grille_solution->largeur != grille_jeu->largeur) {
+
+    if (!grille_solution || !grille_jeu)
+    {
+        printf("Erreur chargement grille jeu ou solution pour vérifications\n");
+        return;
+    }
+
+    if (grille_solution->hauteur != grille_jeu->hauteur || grille_solution->largeur != grille_jeu->largeur)
+    {
         printf("Flop ! (dimensions différentes)\n");
         return;
     }
 
     int ok = 1;
 
-    for (int y = 0; y < grille_solution->hauteur; ++y) {
-        for (int x = 0; x < grille_solution->largeur; ++x) {
+    for (int y = 0; y < grille_solution->hauteur; ++y)
+    {
+        for (int x = 0; x < grille_solution->largeur; ++x)
+        {
             
             int jeu_case = grille_jeu->cases[y][x];
             int sol_case = grille_solution->cases[y][x];
             if (sol_case == ETAT_NOIR) {
           
-                if (jeu_case != ETAT_NOIR) {
+                if (jeu_case != ETAT_NOIR)
+                {
                     ok = 0;
                     break; 
                 }
@@ -384,96 +526,6 @@ void Verification(Grille *grille_solution, Grille *grille_jeu) {
     }
 }
 
-int read_grid_from_txt(const char *path, int ***out_grid, size_t *out_rows, size_t *out_cols) {
-    if (!path || !out_grid || !out_rows || !out_cols) {
-        return 1;
-    }
-
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        return 2;
-    }
-
-    char ligne[1024];
-    int **grid = NULL;
-    size_t rows = 0, cols = 0, capacity = 0;
-
-    while (fgets(ligne, sizeof(ligne), f)) {
-        size_t len = strlen(ligne);
-        while (len > 0 && (ligne[len - 1] == '\n' || ligne[len - 1] == '\r')) {
-            ligne[--len] = '\0';
-        }
-
-        size_t count_bits = 0;
-        for (size_t i = 0; i < len; ++i) {
-            if (ligne[i] == '0' || ligne[i] == '1') {
-                count_bits++;
-            }
-        }
-        if (count_bits == 0) {
-            continue;
-        }
-
-        if (cols == 0) {
-            cols = count_bits;
-        } else if (cols != count_bits) {
-            fclose(f);
-            for (size_t r = 0; r < rows; ++r) {
-                free(grid[r]);
-            }
-            free(grid);
-            return 4;
-        }
-
-        int *row = malloc(cols * sizeof(int));
-        if (!row) {
-            fclose(f);
-            for (size_t r = 0; r < rows; ++r) {
-                free(grid[r]);
-            }
-            free(grid);
-            return 5;
-        }
-
-        size_t c = 0;
-        for (size_t i = 0; i < len && c < cols; ++i) {
-            if (ligne[i] == '0' || ligne[i] == '1') {
-                row[c++] = (ligne[i] == '1') ? 1 : 0;
-            }
-        }
-
-
-        if (rows >= capacity) {
-            size_t new_cap = (capacity == 0) ? 4 : capacity * 2;
-            int **new_grid = realloc(grid, new_cap * sizeof(int *));
-            if (!new_grid) {
-                fclose(f);
-                free(row);
-                for (size_t r = 0; r < rows; ++r) {
-                    free(grid[r]);
-                }
-                free(grid);
-                return 6;
-            }
-            grid = new_grid;
-            capacity = new_cap;
-        }
-
-        grid[rows++] = row;
-    }
-
-    fclose(f);
-
-    if (rows == 0 || cols == 0) {
-        free(grid);
-        return 7;
-    }
-
-    *out_grid = grid;
-    *out_rows = rows;
-    *out_cols = cols;
-    return 0;
-}
 
 void free_grid(int **grid, size_t rows) {
     if (!grid) {
